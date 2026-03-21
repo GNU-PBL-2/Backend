@@ -1,5 +1,6 @@
 package gnu.project.pbl2.auth.controller;
 
+import gnu.project.pbl2.auth.controller.docs.OauthDocs;
 import gnu.project.pbl2.auth.dto.request.OauthLoginRequest;
 import gnu.project.pbl2.auth.dto.response.AuthTokenDto;
 import gnu.project.pbl2.auth.service.OauthService;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
-public class OauthController {
+public class OauthController implements OauthDocs {
 
     private final OauthService oauthService;
 
