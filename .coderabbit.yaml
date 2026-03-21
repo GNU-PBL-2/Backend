@@ -253,7 +253,6 @@ reviews:
           - 예: /users/{id}:activate
     
         - 불가피한 경우에만 제한적으로 사용한다.
-        |
   review_status: true
   request_changes_workflow: false
   high_level_summary: true
