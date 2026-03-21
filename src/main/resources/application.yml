@@ -5,6 +5,7 @@ spring :
     name: pbl2
   jpa:
     open-in-view: false
+    defer-datasource-initialization: true
 
 
 

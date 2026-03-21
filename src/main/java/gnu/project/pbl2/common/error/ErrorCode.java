@@ -25,9 +25,13 @@ public enum ErrorCode {
     OAUTH_TOKEN_REQUEST_FAILED(HttpStatus.BAD_REQUEST, "AUTH4006", "소셜 로그인 중 액세스 토큰 요청에 실패했습니다."),
     OAUTH_USERINFO_RESPONSE_EMPTY(HttpStatus.BAD_REQUEST, "AUTH4007",
         "소셜 로그인 중 사용자 정보 응답이 비어 있습니다."),
-    ROLE_IS_NOT_VALID(HttpStatus.BAD_REQUEST, "AUTH4008", "해당 역할은 유효하지 않습니다");
+    ROLE_IS_NOT_VALID(HttpStatus.BAD_REQUEST, "AUTH4008", "해당 역할은 유효하지 않습니다"),
 
-    // owner
+    // user
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER5001","해당 유저를 찾을 수 없습니다")
+
+
+    ;
 
     private final HttpStatus status;
     private final String code;
