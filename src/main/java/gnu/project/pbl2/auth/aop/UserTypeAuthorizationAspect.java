@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserTypeAuthorizationAspect {
 
-    @Around("@annotation(gnu.project.pbl2.auth.aop.OnlyCustomer)")
+    @Around("@annotation(gnu.project.pbl2.auth.aop.OnlyUser)")
     public Object authorizeUser(ProceedingJoinPoint joinPoint) throws Throwable {
         return authorize(joinPoint, Accessor::isUser);
     }
 
-    @Around("@annotation(gnu.project.pbl2.auth.aop.OnlyOwner)")
+    @Around("@annotation(gnu.project.pbl2.auth.aop.OnlyAdmin)")
     public Object authorizeAdmin(ProceedingJoinPoint joinPoint) throws Throwable {
         return authorize(joinPoint, Accessor::isAdmin);
     }
