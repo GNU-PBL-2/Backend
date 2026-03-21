@@ -12,10 +12,7 @@ import gnu.project.pbl2.common.repository.TasteRepository;
 import gnu.project.pbl2.user.dto.request.UserOnboardRequest;
 import gnu.project.pbl2.user.dto.response.UserResponseDto;
 import gnu.project.pbl2.user.entity.User;
-import gnu.project.pbl2.user.repository.UserAllergyRepository;
-import gnu.project.pbl2.user.repository.UserCategoryRepository;
 import gnu.project.pbl2.user.repository.UserRepository;
-import gnu.project.pbl2.user.repository.UserTasteRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,11 +27,6 @@ public class UserService {
     private final AllergyRepository allergyRepository;
     private final TasteRepository tasteRepository;
     private final CategoryRepository categoryRepository;
-
-    private final UserAllergyRepository userAllergyRepository;
-    private final UserTasteRepository userTasteRepository;
-    private final UserCategoryRepository userCategoryRepository;
-
     private final UserRepository userRepository;
 
     public UserResponseDto saveOnboarding(
