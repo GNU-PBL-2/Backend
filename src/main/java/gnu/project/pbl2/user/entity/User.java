@@ -34,7 +34,7 @@ public class User extends BaseEntity implements OauthUser {
     @Column(name = "id")
     private Long id;
 
-    @Column(columnDefinition = "BINARY(16)", unique = true, nullable = false, updatable = false)
+    @Column(columnDefinition = "BINARY(16)", unique = true, updatable = false)
     private java.util.UUID publicId;
 
 

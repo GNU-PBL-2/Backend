@@ -1,257 +1,259 @@
 reviews:
-  instructions: |
-    ## Naming
-
-    - 패키지명은 소문자만 사용한다.
-    - 클래스명은 PascalCase를 사용하며 명사 형태로 작성한다.
-    - 메서드명은 camelCase를 사용하며 반드시 동사로 시작한다.
-    - 변수명은 camelCase를 사용하며 명사 형태로 작성한다.
-    - boolean 변수는 is, has, can 중 하나로 시작한다.
-    - 약어 사용을 금지한다. (예: cnt → count)
-    - 한 글자 변수명은 금지한다. (for문 i, j 제외)
-
-    ---
-
-    ## Method Naming
-
-    - 메서드는 다음 Prefix 중 하나를 사용한다:
+  path_instructions:
+    - path: "**/*"
+      instructions: |
+        ## Naming
     
-    - get: 데이터 조회
-    - create: 생성
-    - update: 수정
-    - delete: 삭제
-    - init: 초기화
-    - is/has/can: boolean 반환
-    - to: 객체 변환 (예: toDto, toEntity)
-
-    - modify, convert 등의 중복되거나 모호한 표현은 사용하지 않는다.
-
-    ---
-
-    ## Indent
-
-    - 들여쓰기는 공백 4칸을 사용한다.
-
-    ---
-
-    ## Constant
-
-    - 상수는 모두 대문자와 '_'를 사용한다.
-    - 예: MAX_SIZE, SPECIAL_NUMBER
-
-    ---
-
-    ## Variable
-
-    - 변수는 명확한 의미를 가지는 명사로 작성한다.
-    - 동사를 포함한 변수명은 금지한다.
-    - boolean 변수는 반드시 is/has/can prefix를 사용한다.
-
-    ---
-
-    ## Final
-
-    - 변경되지 않는 필드는 final을 사용한다.
-    - 불필요한 final 남용은 지양한다.
-
-    ---
-
-    ## DTO
-
-    - 클래스명은 XxxDto 형식으로 작성한다.
-    - 내부 구조는 Request / Response로 구분한다.
-
-    예시:
-    public class CartDto {
-      public static class Request {
-          public record Add {}
-          public record Update {}
-      }
-      public record Response {}
-    }
-
-    - Entity 변환 규칙:
-    - dto → entity : entity에서 수행
-    - entity → dto : dto에서 수행
-
-    ---
-
-    ## Comment
-
-    - 다음 대상에만 주석을 작성한다:
-    - Controller
-    - Service
-    - 복잡한 비즈니스 로직
-
-    - 주석은 Javadoc 형식을 사용한다.
-    - 단순 getter/setter에는 작성하지 않는다.
-
-    ---
-
-    ## Enum
-
-    - Enum 클래스명은 PascalCase를 사용한다.
-    - Enum 값은 대문자와 '_'를 사용한다.
-    - 상태 값 Enum은 XxxStatus 형태로 작성한다.
-    - 예: ProductStatus
-
-    ---
-
-    ## Test
-
-    - 테스트 메서드는 한글로 작성한다.
-    - 단어 구분은 '_'를 사용한다.
-    - Given / When / Then 구조를 따른다.
-    - 관련 테스트는 @Nested로 그룹화한다.
-
-    ---
-
-    ## MVC Structure
-
-    - 패키지는 다음 구조를 따른다:
+        - 패키지명은 소문자만 사용한다.
+        - 클래스명은 PascalCase를 사용하며 명사 형태로 작성한다.
+        - 메서드명은 camelCase를 사용하며 반드시 동사로 시작한다.
+        - 변수명은 camelCase를 사용하며 명사 형태로 작성한다.
+        - boolean 변수는 is, has, can 중 하나로 시작한다.
+        - 약어 사용을 금지한다. (예: cnt → count)
+        - 한 글자 변수명은 금지한다. (for문 i, j 제외)
     
-    - controller
-    - service
-    - repository
-    - entity
-    - dto
-    - config
-    - utils
-
-    - 의존성 주입은 생성자 기반으로 수행한다.
-    - Lombok의 @RequiredArgsConstructor 사용을 권장한다.
-
-    ---
-
-    ## Constructor
-
-    - 객체 생성은 Static Factory Method를 사용한다.
-    - Entity 생성 시 DTO를 직접 받지 않는다.
-        ## REST API URI Convention
-
-    ### 1. Resource Naming
-
-    - URI는 반드시 "명사"를 사용한다.
-    - 동사를 URI에 포함하는 것을 금지한다.
-    - 행위는 HTTP Method로 표현한다.
-
-    잘못된 예:
-    - /getUsers
-    - /createUser
-    - /deleteOrder
-
-    올바른 예:
-    - GET /users
-    - POST /users
-    - DELETE /orders/{id}
-
-    ---
-
-    ### 2. Resource Type
-
-    - 리소스는 다음 3가지 유형으로 구분한다:
-
-      1) Document (단일 리소스)
-        - 단수 사용
-        - 예: /users/{id}
-
-      2) Collection (리소스 목록)
-        - 복수 사용
-        - 예: /users
-
-      3) Store (클라이언트 관리 리소스)
-        - 복수 사용
-        - 예: /users/{id}/playlists
-
-    ---
-
-    ### 3. Lowercase
-
-    - URI 경로는 반드시 소문자만 사용한다.
-
-    잘못된 예:
-    - /Users
-    - /User-Management
-
-    올바른 예:
-    - /users
-    - /user-management
-
-    ---
-
-    ### 4. Trailing Slash
-
-    - URI 끝에 '/'를 포함하지 않는다.
-
-    잘못된 예:
-    - /users/
-
-    올바른 예:
-    - /users
-
-    ---
-
-    ### 5. Hyphen Usage
-
-    - URI 경로에서 단어 구분은 '-'를 사용한다.
-    - '_' 사용을 금지한다.
-
-    잘못된 예:
-    - /user_management
-    - /managed_devices
-
-    올바른 예:
-    - /user-management
-    - /managed-devices
-
-    ---
-
-    ### 6. CRUD in URI 금지
-
-    - URI에 CRUD 관련 단어를 포함하지 않는다.
-      - get, create, update, delete 금지
-
-    - CRUD 동작은 HTTP Method로만 표현한다.
-
-    올바른 예:
-    - GET /devices
-    - POST /devices
-    - PUT /devices/{id}
-    - DELETE /devices/{id}
-
-    ---
-
-    ### 7. Query Parameter Usage
-
-    - 필터링, 검색 조건은 Query Parameter를 사용한다.
-
-    예:
-    - GET /users?status=active
-    - GET /accounts?userId={id}
-
-    ---
-
-    ### 8. Path Depth
-
-    - URI depth는 최대 3단계까지 권장한다.
-    - 과도한 중첩 구조를 금지한다.
-
-    잘못된 예:
-    - /users/{id}/orders/{orderId}/items/{itemId}
-
-    권장:
-    - /orders/{orderId}/items
-    - /items?orderId={orderId}
-
-    ---
-
-    ### 9. Custom Method 제한
-
-    - 콜론(:) 기반 custom method 사용을 지양한다.
-      - 예: /users/{id}:activate
-
-    - 불가피한 경우에만 제한적으로 사용한다.
-    |
+        ---
+    
+        ## Method Naming
+    
+        - 메서드는 다음 Prefix 중 하나를 사용한다:
+        
+        - get: 데이터 조회
+        - create: 생성
+        - update: 수정
+        - delete: 삭제
+        - init: 초기화
+        - is/has/can: boolean 반환
+        - to: 객체 변환 (예: toDto, toEntity)
+    
+        - modify, convert 등의 중복되거나 모호한 표현은 사용하지 않는다.
+    
+        ---
+    
+        ## Indent
+    
+        - 들여쓰기는 공백 4칸을 사용한다.
+    
+        ---
+    
+        ## Constant
+    
+        - 상수는 모두 대문자와 '_'를 사용한다.
+        - 예: MAX_SIZE, SPECIAL_NUMBER
+    
+        ---
+    
+        ## Variable
+    
+        - 변수는 명확한 의미를 가지는 명사로 작성한다.
+        - 동사를 포함한 변수명은 금지한다.
+        - boolean 변수는 반드시 is/has/can prefix를 사용한다.
+    
+        ---
+    
+        ## Final
+    
+        - 변경되지 않는 필드는 final을 사용한다.
+        - 불필요한 final 남용은 지양한다.
+    
+        ---
+    
+        ## DTO
+    
+        - 클래스명은 XxxDto 형식으로 작성한다.
+        - 내부 구조는 Request / Response로 구분한다.
+    
+        예시:
+        public class CartDto {
+          public static class Request {
+              public record Add {}
+              public record Update {}
+          }
+          public record Response {}
+        }
+    
+        - Entity 변환 규칙:
+        - dto → entity : entity에서 수행
+        - entity → dto : dto에서 수행
+    
+        ---
+    
+        ## Comment
+    
+        - 다음 대상에만 주석을 작성한다:
+        - Controller
+        - Service
+        - 복잡한 비즈니스 로직
+    
+        - 주석은 Javadoc 형식을 사용한다.
+        - 단순 getter/setter에는 작성하지 않는다.
+    
+        ---
+    
+        ## Enum
+    
+        - Enum 클래스명은 PascalCase를 사용한다.
+        - Enum 값은 대문자와 '_'를 사용한다.
+        - 상태 값 Enum은 XxxStatus 형태로 작성한다.
+        - 예: ProductStatus
+    
+        ---
+    
+        ## Test
+    
+        - 테스트 메서드는 한글로 작성한다.
+        - 단어 구분은 '_'를 사용한다.
+        - Given / When / Then 구조를 따른다.
+        - 관련 테스트는 @Nested로 그룹화한다.
+    
+        ---
+    
+        ## MVC Structure
+    
+        - 패키지는 다음 구조를 따른다:
+        
+        - controller
+        - service
+        - repository
+        - entity
+        - dto
+        - config
+        - utils
+    
+        - 의존성 주입은 생성자 기반으로 수행한다.
+        - Lombok의 @RequiredArgsConstructor 사용을 권장한다.
+    
+        ---
+    
+        ## Constructor
+    
+        - 객체 생성은 Static Factory Method를 사용한다.
+        - Entity 생성 시 DTO를 직접 받지 않는다.
+            ## REST API URI Convention
+    
+        ### 1. Resource Naming
+    
+        - URI는 반드시 "명사"를 사용한다.
+        - 동사를 URI에 포함하는 것을 금지한다.
+        - 행위는 HTTP Method로 표현한다.
+    
+        잘못된 예:
+        - /getUsers
+        - /createUser
+        - /deleteOrder
+    
+        올바른 예:
+        - GET /users
+        - POST /users
+        - DELETE /orders/{id}
+    
+        ---
+    
+        ### 2. Resource Type
+    
+        - 리소스는 다음 3가지 유형으로 구분한다:
+    
+          1) Document (단일 리소스)
+            - 단수 사용
+            - 예: /users/{id}
+    
+          2) Collection (리소스 목록)
+            - 복수 사용
+            - 예: /users
+    
+          3) Store (클라이언트 관리 리소스)
+            - 복수 사용
+            - 예: /users/{id}/playlists
+    
+        ---
+    
+        ### 3. Lowercase
+    
+        - URI 경로는 반드시 소문자만 사용한다.
+    
+        잘못된 예:
+        - /Users
+        - /User-Management
+    
+        올바른 예:
+        - /users
+        - /user-management
+    
+        ---
+    
+        ### 4. Trailing Slash
+    
+        - URI 끝에 '/'를 포함하지 않는다.
+    
+        잘못된 예:
+        - /users/
+    
+        올바른 예:
+        - /users
+    
+        ---
+    
+        ### 5. Hyphen Usage
+    
+        - URI 경로에서 단어 구분은 '-'를 사용한다.
+        - '_' 사용을 금지한다.
+    
+        잘못된 예:
+        - /user_management
+        - /managed_devices
+    
+        올바른 예:
+        - /user-management
+        - /managed-devices
+    
+        ---
+    
+        ### 6. CRUD in URI 금지
+    
+        - URI에 CRUD 관련 단어를 포함하지 않는다.
+          - get, create, update, delete 금지
+    
+        - CRUD 동작은 HTTP Method로만 표현한다.
+    
+        올바른 예:
+        - GET /devices
+        - POST /devices
+        - PUT /devices/{id}
+        - DELETE /devices/{id}
+    
+        ---
+    
+        ### 7. Query Parameter Usage
+    
+        - 필터링, 검색 조건은 Query Parameter를 사용한다.
+    
+        예:
+        - GET /users?status=active
+        - GET /accounts?userId={id}
+    
+        ---
+    
+        ### 8. Path Depth
+    
+        - URI depth는 최대 3단계까지 권장한다.
+        - 과도한 중첩 구조를 금지한다.
+    
+        잘못된 예:
+        - /users/{id}/orders/{orderId}/items/{itemId}
+    
+        권장:
+        - /orders/{orderId}/items
+        - /items?orderId={orderId}
+    
+        ---
+    
+        ### 9. Custom Method 제한
+    
+        - 콜론(:) 기반 custom method 사용을 지양한다.
+          - 예: /users/{id}:activate
+    
+        - 불가피한 경우에만 제한적으로 사용한다.
+        |
   review_status: true
   request_changes_workflow: false
   high_level_summary: true
