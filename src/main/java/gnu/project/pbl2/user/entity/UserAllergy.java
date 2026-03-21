@@ -35,4 +35,10 @@ public class UserAllergy {
     @JoinColumn(name = "allergy_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Allergy allergy;
+    public static UserAllergy of(final User user, final Allergy allergy) {
+        final UserAllergy userAllergy = new UserAllergy();
+        userAllergy.user = user;
+        userAllergy.allergy = allergy;
+        return userAllergy;
+    }
 }

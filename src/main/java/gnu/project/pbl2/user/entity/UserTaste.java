@@ -34,4 +34,10 @@ public class UserTaste {
     @JoinColumn(name = "taste_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Taste taste;
+    public static UserTaste of(final User user, final Taste taste) {
+        final UserTaste userTaste = new UserTaste();
+        userTaste.user = user;
+        userTaste.taste = taste;
+        return userTaste;
+    }
 }

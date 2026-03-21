@@ -11,13 +11,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
 @Table(name = "user_categories")
 public class UserCategory {
@@ -35,4 +33,10 @@ public class UserCategory {
     @JoinColumn(name = "category_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
+    public static UserCategory of(final User user,final Category category) {
+        final UserCategory userCategory = new UserCategory();
+        userCategory.user = user;
+        userCategory.category = category;
+        return userCategory;
+    }
 }
