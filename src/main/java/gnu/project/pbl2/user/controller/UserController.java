@@ -1,14 +1,12 @@
 package gnu.project.pbl2.user.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequiredArgsConstructor
+@RequestMapping("api/v1")
 public class UserController {
-
-    @PostMapping("/")
-    public void createMember(){
-
-    }
 
 }

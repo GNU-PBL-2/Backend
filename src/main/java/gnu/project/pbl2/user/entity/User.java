@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,15 +29,13 @@ import lombok.NoArgsConstructor;
 public class User extends BaseEntity implements OauthUser {
 
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Column(columnDefinition = "BINARY(16)", unique = true, updatable = false)
-    private java.util.UUID publicId;
-
+    @Column(columnDefinition = "BINARY(16)", unique = true, updatable = false, nullable = false)
+    private UUID publicId;
 
     @Column
     @Enumerated(EnumType.STRING)
@@ -50,10 +49,10 @@ public class User extends BaseEntity implements OauthUser {
         final String name,
         final String socialId,
         final SocialProvider provider) {
-        OauthInfo oauthInfo = OauthInfo.of(email,name,socialId,provider);
+        OauthInfo oauthInfo = OauthInfo.of(email, name, socialId, provider);
         return new User(
             null,
-            null,
+            UUID.randomUUID(),
             UserRole.USER,
             oauthInfo
         );
@@ -63,6 +62,7 @@ public class User extends BaseEntity implements OauthUser {
     public UserRole getUserRole() {
         return this.userRole != null ? this.userRole : UserRole.USER;
     }
+
     @Override
     public OauthInfo getOauthInfo() {
         return this.oauthInfo;

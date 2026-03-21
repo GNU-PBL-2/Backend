@@ -1,4 +1,4 @@
-package gnu.project.pbl2.category.entity;
+package gnu.project.pbl2.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
