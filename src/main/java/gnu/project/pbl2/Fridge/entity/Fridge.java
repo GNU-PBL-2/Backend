@@ -1,4 +1,4 @@
-package gnu.project.pbl2.fridge.entity;
+package gnu.project.pbl2;
 
 import gnu.project.pbl2.common.entity.Ingredient;
 import gnu.project.pbl2.user.entity.User;

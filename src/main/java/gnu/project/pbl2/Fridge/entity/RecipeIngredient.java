@@ -1,4 +1,4 @@
-package gnu.project.pbl2.recipeingredient.entity;
+package gnu.project.pbl2;
 
 import gnu.project.pbl2.domain.ingredient.entity.Ingredient;
 import jakarta.persistence.*;
