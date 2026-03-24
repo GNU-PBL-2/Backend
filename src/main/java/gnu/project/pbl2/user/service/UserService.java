@@ -52,13 +52,13 @@ public class UserService {
     }
 
     private User getUser(final Accessor accessor) {
-        return userRepository.findByUser(accessor.getUserId())
+        return userRepository.findActiveById(accessor.getUserId())
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public String withdraw(final Accessor accessor) {
+    public String deleteUser(final Accessor accessor) {
         User user = getUser(accessor);
-        user.withdraw();
+        user.delete();
         return WITHDRAW;
     }
 }

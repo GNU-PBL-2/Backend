@@ -85,7 +85,7 @@ public interface UserDocs {
             content = @Content(schema = @Schema(hidden = true))
         )
     })
-    ResponseEntity<String> withdrawUser(
+    ResponseEntity<String> deleteUser(
         Accessor accessor
     );
 }

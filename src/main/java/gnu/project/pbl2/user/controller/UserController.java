@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1/users")
+@RequestMapping("/api/v1/users")
 public class UserController implements UserDocs {
 
     private final UserService userService;
@@ -43,11 +43,11 @@ public class UserController implements UserDocs {
     }
     @OnlyUser
     @DeleteMapping()
-    public ResponseEntity<String> withdrawUser(
+    public ResponseEntity<String> deleteUser(
         @Auth final Accessor accessor
     ){
         return ResponseEntity.ok(
-            userService.withdraw(accessor)
+            userService.deleteUser(accessor)
         );
     }
 }

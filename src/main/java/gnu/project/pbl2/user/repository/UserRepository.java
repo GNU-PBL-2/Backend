@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 public interface UserRepository extends JpaRepository<User,Long> {
 
     Optional<User> findByOauthInfo_SocialId(final String socialId);
-    @Query("select u from User u where u.id = :id and u.isDeleted is false ")
-    Optional<User> findByUser(@Param("id") Long id);
+    @Query("select u from User u where u.id = :id and u.isDeleted = false ")
+    Optional<User> findActiveById(@Param("id") Long id);
 
     boolean existsByOauthInfo_SocialId(String socialId);
 }
