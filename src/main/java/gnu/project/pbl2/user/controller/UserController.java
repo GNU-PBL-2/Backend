@@ -33,7 +33,7 @@ public class UserController implements UserDocs {
     }
 
     @OnlyUser
-    @GetMapping("/{id}")
+    @GetMapping()
     public ResponseEntity<UserResponseDto> getUserInfo(
         @Auth final Accessor accessor
     ){
@@ -42,8 +42,8 @@ public class UserController implements UserDocs {
         );
     }
     @OnlyUser
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> withdrawlUser(
+    @DeleteMapping()
+    public ResponseEntity<String> withdrawUser(
         @Auth final Accessor accessor
     ){
         return ResponseEntity.ok(
