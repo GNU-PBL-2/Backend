@@ -40,4 +40,52 @@ public interface UserDocs {
         @RequestBody UserOnboardRequest request,
         Accessor accessor
     );
+    @Operation(
+        summary = "유저 정보 조회",
+        description = "현재 로그인한 유저의 정보를 조회합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "조회 성공",
+            content = @Content(schema = @Schema(implementation = UserResponseDto.class))
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 사용자",
+            content = @Content(schema = @Schema(hidden = true))
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "유저를 찾을 수 없음",
+            content = @Content(schema = @Schema(hidden = true))
+        )
+    })
+    ResponseEntity<UserResponseDto> getUserInfo(
+        Accessor accessor
+    );
+    @Operation(
+        summary = "회원 탈퇴",
+        description = "현재 로그인한 유저를 탈퇴 처리합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "탈퇴 성공",
+            content = @Content(schema = @Schema(implementation = String.class))
+        ),
+        @ApiResponse(
+            responseCode = "401",
+            description = "인증되지 않은 사용자",
+            content = @Content(schema = @Schema(hidden = true))
+        ),
+        @ApiResponse(
+            responseCode = "404",
+            description = "유저를 찾을 수 없음",
+            content = @Content(schema = @Schema(hidden = true))
+        )
+    })
+    ResponseEntity<String> deleteUser(
+        Accessor accessor
+    );
 }

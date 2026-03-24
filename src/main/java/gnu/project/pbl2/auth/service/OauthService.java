@@ -13,6 +13,7 @@ import gnu.project.pbl2.auth.provider.OauthProviders;
 import gnu.project.pbl2.auth.userinfo.OauthUserInfo;
 import gnu.project.pbl2.common.enumerated.UserRole;
 import gnu.project.pbl2.common.exception.AuthException;
+import gnu.project.pbl2.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class OauthService {
     private final OauthProviders oauthProviders;
     private final OauthUserFactory oauthUserFactory;
     private final JwtProvider jwtProvider;
+    private final UserRepository userRepository;
 
     public AuthTokenDto login(final OauthLoginRequest request) {
         final OauthProvider provider = oauthProviders.getProvider(request.socialProvider());
@@ -54,7 +56,7 @@ public class OauthService {
 
     private boolean isUserExists(String socialId, UserRole userRole) {
         return switch (userRole) {
-//            case USER -> ownerRepository.existsByOauthInfo_SocialId(socialId);
+            case USER ->userRepository.existsByOauthInfo_SocialId(socialId);
 //            case ADMIN -> customerRepository.existsByOauthInfo_SocialId(socialId);
             default -> false;
         };
