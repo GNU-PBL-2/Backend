@@ -9,6 +9,8 @@ import gnu.project.pbl2.user.dto.response.UserResponseDto;
 import gnu.project.pbl2.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/v1")
+@RequestMapping("api/v1/users")
 public class UserController implements UserDocs {
 
     private final UserService userService;
@@ -30,4 +32,22 @@ public class UserController implements UserDocs {
         return ResponseEntity.ok(userService.saveOnboarding(request,accessor));
     }
 
+    @OnlyUser
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseDto> getUserInfo(
+        @Auth final Accessor accessor
+    ){
+        return ResponseEntity.ok(
+            userService.getUserInfo(accessor)
+        );
+    }
+    @OnlyUser
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> withdrawlUser(
+        @Auth final Accessor accessor
+    ){
+        return ResponseEntity.ok(
+            userService.withdraw(accessor)
+        );
+    }
 }

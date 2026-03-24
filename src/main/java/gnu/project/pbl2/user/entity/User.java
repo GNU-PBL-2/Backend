@@ -61,6 +61,9 @@ public class User extends BaseEntity implements OauthUser {
 
 
 
+    public void withdraw(){
+        super.delete();
+    }
     public static User createFromOAuth(
         final String email,
         final String name,

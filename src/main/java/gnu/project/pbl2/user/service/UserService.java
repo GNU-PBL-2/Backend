@@ -1,5 +1,7 @@
 package gnu.project.pbl2.user.service;
 
+import static gnu.project.pbl2.user.constant.UserConstants.WITHDRAW;
+
 import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.common.entity.Allergy;
 import gnu.project.pbl2.common.entity.Category;
@@ -33,8 +35,7 @@ public class UserService {
         final UserOnboardRequest request,
         final Accessor accessor
     ) {
-        final User user = userRepository.findById(accessor.getUserId())
-            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+        final User user = getUser(accessor);
 
         final List<Allergy> allergies = allergyRepository.findAllById(request.allergies());
         final List<Taste> tastes = tasteRepository.findAllById(request.tastes());
@@ -42,7 +43,22 @@ public class UserService {
 
         user.updateOnboarding(allergies, tastes, categories);
 
-
         return UserResponseDto.from(user);
+    }
+    @Transactional(readOnly = true)
+    public UserResponseDto getUserInfo(final Accessor accessor) {
+        User user = getUser(accessor);
+        return UserResponseDto.from(user);
+    }
+
+    private User getUser(final Accessor accessor) {
+        return userRepository.findByUser(accessor.getUserId())
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    public String withdraw(final Accessor accessor) {
+        User user = getUser(accessor);
+        user.withdraw();
+        return WITHDRAW;
     }
 }
