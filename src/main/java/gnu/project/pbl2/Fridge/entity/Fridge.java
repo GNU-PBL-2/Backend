@@ -77,3 +77,13 @@ public class Fridge {
         this.expiryDate = expiryDate;
     }
 }
+
+    public Fridge(Member member, Ingredient ingredient,
+                  BigDecimal quantity, String unit, LocalDate expiryDate) {
+        this.member = member;
+        this.ingredient = ingredient;
+        this.quantity = quantity;
+        this.unit = unit;
+        this.expiryDate = expiryDate;
+        this.registeredAt = LocalDateTime.now();
+    }

@@ -11,4 +11,12 @@ public class FridgeController {
     ) {
         return ResponseEntity.ok(fridgeService.getFridgeByMemberId(memberId));
     }
+
+    @PostMapping
+    public ResponseEntity<String> addIngredient(
+            @RequestBody FridgeCreateRequest request
+    ) {
+        fridgeService.addIngredient(request);
+        return ResponseEntity.ok("재료 추가 완료");
+    }
 }
