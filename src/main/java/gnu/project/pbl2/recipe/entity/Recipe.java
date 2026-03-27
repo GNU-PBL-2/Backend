@@ -1,13 +1,17 @@
 package gnu.project.pbl2.recipe.entity;
 
 import gnu.project.pbl2.common.entity.BaseEntity;
-import gnu.project.pbl2.common.entity.Ingredient;
+import gnu.project.pbl2.common.entity.Category;
+import gnu.project.pbl2.common.entity.Taste;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +32,13 @@ public class Recipe extends BaseEntity {
     @Column(nullable = false, length = 200)
     private String title;
 
-    @Column(nullable = false)
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
-    @Column(nullable = false)
-    private Long tasteId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "taste_id", nullable = false)
+    private Taste taste;
 
     @Column()
     private Integer cookTimeMin;
@@ -50,5 +56,5 @@ public class Recipe extends BaseEntity {
     private List<RecipeStep> steps = new ArrayList<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-    private List<Ingredient> ingredients = new ArrayList<>();
+    private List<RecipeIngredient> ingredients = new ArrayList<>();
 }
