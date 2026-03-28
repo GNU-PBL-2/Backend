@@ -8,6 +8,7 @@ import gnu.project.pbl2.common.entity.BaseEntity;
 import gnu.project.pbl2.common.entity.Category;
 import gnu.project.pbl2.common.entity.Taste;
 import gnu.project.pbl2.common.enumerated.UserRole;
+import gnu.project.pbl2.recipe.entity.Favorite;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -52,6 +53,9 @@ public class User extends BaseEntity implements OauthUser {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserAllergy> userAllergies = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Favorite> favorites = new ArrayList<>();
+
     @Column
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
@@ -59,11 +63,6 @@ public class User extends BaseEntity implements OauthUser {
     @Embedded
     private OauthInfo oauthInfo;
 
-
-
-    public void delete(){
-        super.delete();
-    }
     public static User createFromOAuth(
         final String email,
         final String name,
@@ -75,6 +74,11 @@ public class User extends BaseEntity implements OauthUser {
         user.oauthInfo = OauthInfo.of(email, name, socialId, provider);
         return user;
     }
+
+    public void delete() {
+        super.delete();
+    }
+
     public void updateOnboarding(
         List<Allergy> allergies,
         List<Taste> tastes,
@@ -96,6 +100,7 @@ public class User extends BaseEntity implements OauthUser {
             .map(c -> UserCategory.of(this, c))
             .forEach(this.userCategories::add);
     }
+
     public List<String> getAllergyNames() {
         return userAllergies.stream()
             .map(ua -> ua.getAllergy().getName())
@@ -113,6 +118,7 @@ public class User extends BaseEntity implements OauthUser {
             .map(uc -> uc.getCategory().getName())
             .toList();
     }
+
     @Override
     public UserRole getUserRole() {
         return this.userRole != null ? this.userRole : UserRole.USER;
