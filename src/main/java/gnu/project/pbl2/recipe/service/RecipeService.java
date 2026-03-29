@@ -11,20 +11,21 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
-
+    @Transactional(readOnly = true)
     public Page<RecipeSearchResponse> getRecipes(
         final RecipeSearchRequest request,
         final Accessor accessor
     ) {
         Long userId = accessor.getUserId();
 
-        // 1. 레시피 목록 조회 (뱃지 없이)
         Page<RecipeSearchResponse> page = recipeRepository.searchRecipes(request, userId);
         List<Long> recipeIds = page.getContent().stream()
             .map(RecipeSearchResponse::id)
@@ -34,12 +35,10 @@ public class RecipeService {
             return page;
         }
 
-        // 2. 뱃지 데이터 일괄 조회 (쿼리 3개)
         Set<Long> cookableIds = recipeRepository.findCookableRecipeIds(recipeIds, userId);
         Map<Long, Long> expiringMap = recipeRepository.findExpiringCountMap(recipeIds, userId);
         Set<Long> favoriteIds = recipeRepository.findFavoriteRecipeIds(recipeIds, userId);
 
-        // 3. 뱃지 조립
         List<RecipeSearchResponse> assembled = page.getContent().stream()
             .map(r -> r.withBadge(
                 cookableIds.contains(r.id()),

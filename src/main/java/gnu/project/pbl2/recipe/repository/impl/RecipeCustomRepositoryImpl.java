@@ -1,5 +1,7 @@
 package gnu.project.pbl2.recipe.repository.impl;
 
+import static com.querydsl.core.types.dsl.Expressions.asBoolean;
+import static com.querydsl.core.types.dsl.Expressions.asNumber;
 import static gnu.project.pbl2.fridge.entity.QFridge.fridge;
 import static gnu.project.pbl2.recipe.entity.QFavorite.favorite;
 import static gnu.project.pbl2.recipe.entity.QRecipe.recipe;
@@ -88,13 +90,13 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
                 recipe.title,
                 recipe.thumbnailUrl,
                 recipe.cookTimeMin,
-                com.querydsl.core.types.dsl.Expressions.asBoolean(false),
-                com.querydsl.core.types.dsl.Expressions.asNumber(0).intValue(),
-                com.querydsl.core.types.dsl.Expressions.asBoolean(false)
+                asBoolean(false),
+                asNumber(0).intValue(),
+                asBoolean(false)
             ))
             .from(recipe)
             .leftJoin(recipe.category)
-            .where(condition)
+            .where(condition,recipe.isDeleted.isFalse())
             .orderBy(orders)
             .offset((long) request.page() * request.size())
             .limit(request.size())

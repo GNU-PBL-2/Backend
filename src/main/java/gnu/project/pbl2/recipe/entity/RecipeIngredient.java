@@ -1,6 +1,7 @@
 package gnu.project.pbl2.recipe.entity;
 
 
+import gnu.project.pbl2.common.entity.BaseEntity;
 import gnu.project.pbl2.common.entity.Ingredient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class RecipeIngredient {
+public class RecipeIngredient extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,13 +45,15 @@ public class RecipeIngredient {
         final Recipe recipe,
         final Ingredient ingredient,
         final String amount,
-        final String unit
+        final String unit,
+        final boolean isSubstitutable
     ) {
         RecipeIngredient recipeIngredient = new RecipeIngredient();
         recipeIngredient.recipe = recipe;
         recipeIngredient.ingredient = ingredient;
         recipeIngredient.amount = amount;
         recipeIngredient.unit = unit;
+        recipeIngredient.isSubstitutable = isSubstitutable;
         return recipeIngredient;
     }
 }

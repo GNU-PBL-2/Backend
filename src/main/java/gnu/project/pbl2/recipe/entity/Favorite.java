@@ -1,5 +1,6 @@
 package gnu.project.pbl2.recipe.entity;
 
+import gnu.project.pbl2.common.entity.BaseEntity;
 import gnu.project.pbl2.user.entity.User;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Favorite {
+public class Favorite extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,4 +29,11 @@ public class Favorite {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id", nullable = false)
     private Recipe recipe;
+
+    public static Favorite of(User user, Recipe recipe) {
+        Favorite favorite = new Favorite();
+        favorite.user = user;
+        favorite.recipe = recipe;
+        return favorite;
+    }
 }
