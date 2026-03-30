@@ -1,9 +1,20 @@
 package gnu.project.pbl2.recipe.service;
 
+import static gnu.project.pbl2.fridge.enumerated.FridgeStatus.*;
+
 import gnu.project.pbl2.auth.entity.Accessor;
+import gnu.project.pbl2.common.error.ErrorCode;
+import gnu.project.pbl2.common.exception.BusinessException;
+import gnu.project.pbl2.fridge.enumerated.FridgeStatus;
+import gnu.project.pbl2.fridge.repository.FridgeRepository;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
+import gnu.project.pbl2.recipe.dto.response.RecipeResponseDto;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
+import gnu.project.pbl2.recipe.entity.Recipe;
+import gnu.project.pbl2.recipe.entity.RecipeStep;
 import gnu.project.pbl2.recipe.repository.RecipeRepository;
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -19,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class RecipeService {
 
     private final RecipeRepository recipeRepository;
+    private final FridgeRepository fridgeRepository;
+
     @Transactional(readOnly = true)
     public Page<RecipeSearchResponse> getRecipes(
         final RecipeSearchRequest request,
@@ -48,5 +61,74 @@ public class RecipeService {
             .toList();
 
         return new PageImpl<>(assembled, page.getPageable(), page.getTotalElements());
+    }
+
+    @Transactional(readOnly = true)
+    public RecipeResponseDto getRecipeDetail(
+        final Long recipeId,
+        final Accessor accessor
+    ) {
+        final Long userId = accessor.getUserId();
+
+        final Recipe foundRecipe = recipeRepository.findDetailById(recipeId)
+            .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
+
+        boolean isFavorite = recipeRepository.isFavorite(recipeId, userId);
+
+        Set<Long> myIngredientIds = fridgeRepository.findIngredientIdsByUserId(userId);
+
+        Set<Long> expiringIngredientIds = fridgeRepository
+            .findExpiringIngredientIds(userId, LocalDate.now().plusDays(3));
+
+        List<RecipeResponseDto.RecipeIngredientDetail> ingredients =
+            foundRecipe.getIngredients().stream()
+                .map(ri -> new RecipeResponseDto.RecipeIngredientDetail(
+                    ri.getIngredient().getId(),
+                    ri.getIngredient().getName(),
+                    ri.getAmount(),
+                    ri.getUnit(),
+                    ri.isSubstitutable(),
+                    getFridgeStatus(
+                        ri.getIngredient().getId(),
+                        myIngredientIds,
+                        expiringIngredientIds
+                    )
+                ))
+                .toList();
+
+        List<RecipeResponseDto.RecipeStepDetail> steps =
+            foundRecipe.getSteps().stream()
+                .sorted(Comparator.comparingInt(RecipeStep::getStepOrder))
+                .map(s -> new RecipeResponseDto.RecipeStepDetail(
+                    s.getStepOrder(),
+                    s.getDescription()
+                ))
+                .toList();
+
+        return new RecipeResponseDto(
+            foundRecipe.getId(),
+            foundRecipe.getTitle(),
+            foundRecipe.getThumbnailUrl(),
+            foundRecipe.getCategory().getName(),
+            foundRecipe.getCookTimeMin(),
+            foundRecipe.getYoutubeUrl(),
+            isFavorite,
+            ingredients,
+            steps
+        );
+    }
+
+    private FridgeStatus getFridgeStatus(
+        final Long ingredientId,
+        final Set<Long> myIngredientIds,
+        final Set<Long> expiringIngredientIds
+    ) {
+        if (!myIngredientIds.contains(ingredientId)) {
+            return NONE;
+        }
+        if (expiringIngredientIds.contains(ingredientId)) {
+            return EXPIRING;
+        }
+        return ENOUGH;
     }
 }

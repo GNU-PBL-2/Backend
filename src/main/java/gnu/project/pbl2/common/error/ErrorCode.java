@@ -28,10 +28,10 @@ public enum ErrorCode {
     ROLE_IS_NOT_VALID(HttpStatus.BAD_REQUEST, "AUTH4008", "해당 역할은 유효하지 않습니다"),
 
     // user
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER5001","해당 유저를 찾을 수 없습니다")
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER5001","해당 유저를 찾을 수 없습니다"),
 
 
-    ;
+    RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND,"RECIPE6001" ,"해당 레시피를 찾을 수 없습니다" );
 
     private final HttpStatus status;
     private final String code;

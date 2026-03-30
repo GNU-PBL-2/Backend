@@ -84,47 +84,47 @@ VALUES (1, '떡', 1),
 -- taste_id: 1=매운맛 2=단맛 3=짠맛 5=고소한맛 6=담백한맛
 
 INSERT INTO recipe (id, title, category_id, taste_id, cook_time_min,
-                    description, youtube_url, thumbnail_url)
+                    description, youtube_url, thumbnail_url,is_deleted)
 VALUES (1, '떡볶이', 7, 1, 20, '쫄깃한 떡과 어묵이 어우러진 매콤달콤한 국민 간식입니다.',
-        'https://youtube.com/watch?v=example1', 'https://img.example.com/tteokbokki.jpg'),
+        'https://youtube.com/watch?v=example1', 'https://img.example.com/tteokbokki.jpg',false),
        (2, '김치찌개', 1, 1, 30, '잘 익은 김치로 끓인 칼칼하고 깊은 맛의 찌개입니다.',
-        'https://youtube.com/watch?v=example2', 'https://img.example.com/kimchijjigae.jpg'),
+        'https://youtube.com/watch?v=example2', 'https://img.example.com/kimchijjigae.jpg',false),
        (3, '된장찌개', 1, 6, 25, '구수한 된장과 두부, 채소가 어우러진 건강한 찌개입니다.',
-        'https://youtube.com/watch?v=example3', 'https://img.example.com/doenjang.jpg'),
+        'https://youtube.com/watch?v=example3', 'https://img.example.com/doenjang.jpg',false),
        (4, '계란볶음밥', 1, 3, 15, '냉장고 재료로 5분 만에 완성하는 간단 볶음밥입니다.',
-        'https://youtube.com/watch?v=example4', 'https://img.example.com/eggrice.jpg'),
+        'https://youtube.com/watch?v=example4', 'https://img.example.com/eggrice.jpg',false),
        (5, '제육볶음', 1, 1, 25, '매콤달콤한 양념에 볶은 돼지고기 요리입니다.', 'https://youtube.com/watch?v=example5',
-        'https://img.example.com/jeyuk.jpg'),
+        'https://img.example.com/jeyuk.jpg',false),
        (6, '순두부찌개', 1, 1, 20, '부드러운 순두부와 해산물이 들어간 얼큰한 찌개입니다.',
-        'https://youtube.com/watch?v=example6', 'https://img.example.com/sundubu.jpg'),
+        'https://youtube.com/watch?v=example6', 'https://img.example.com/sundubu.jpg',false),
        (7, '닭볶음탕', 1, 1, 40, '닭고기와 감자를 매콤하게 졸인 인기 가정식입니다.', 'https://youtube.com/watch?v=example7',
-        'https://img.example.com/dakbokkeum.jpg'),
+        'https://img.example.com/dakbokkeum.jpg',false),
        (8, '참치김밥', 1, 3, 30, '참치와 신선한 채소가 가득한 영양 만점 김밥입니다.', 'https://youtube.com/watch?v=example8',
-        'https://img.example.com/gimbap.jpg'),
+        'https://img.example.com/gimbap.jpg',false),
        (9, '미역국', 1, 6, 30, '생일상의 단골 메뉴, 고소하고 담백한 미역국입니다.', 'https://youtube.com/watch?v=example9',
-        'https://img.example.com/miyeokguk.jpg'),
+        'https://img.example.com/miyeokguk.jpg',false),
        (10, '잡채', 1, 2, 35, '탱글탱글한 당면과 다채로운 채소의 궁합이 일품입니다.',
-        'https://youtube.com/watch?v=example10', 'https://img.example.com/japchae.jpg'),
+        'https://youtube.com/watch?v=example10', 'https://img.example.com/japchae.jpg',false),
        (11, '감자조림', 1, 2, 25, '달콤짭짤한 양념에 졸인 반찬계의 스테디셀러입니다.',
-        'https://youtube.com/watch?v=example11', 'https://img.example.com/gamjajolim.jpg'),
+        'https://youtube.com/watch?v=example11', 'https://img.example.com/gamjajolim.jpg',false),
        (12, '두부김치', 1, 1, 20, '고소한 두부와 볶은 김치의 환상적인 조합입니다.', 'https://youtube.com/watch?v=example12',
-        'https://img.example.com/dubukimchi.jpg'),
+        'https://img.example.com/dubukimchi.jpg',false),
        (13, '크림파스타', 4, 5, 25, '진한 크림 소스와 베이컨이 어우러진 이탈리안 파스타입니다.',
-        'https://youtube.com/watch?v=example13', 'https://img.example.com/creampasta.jpg'),
+        'https://youtube.com/watch?v=example13', 'https://img.example.com/creampasta.jpg',false),
        (14, '새우볶음밥', 4, 3, 20, '탱글한 새우와 채소가 가득한 중화풍 볶음밥입니다.',
-        'https://youtube.com/watch?v=example14', 'https://img.example.com/shrimprice.jpg'),
+        'https://youtube.com/watch?v=example14', 'https://img.example.com/shrimprice.jpg',false),
        (15, '닭가슴살 샐러드', 4, 6, 20, '다이어트에 최적화된 고단백 저칼로리 샐러드입니다.',
-        'https://youtube.com/watch?v=example15', 'https://img.example.com/chickensalad.jpg'),
+        'https://youtube.com/watch?v=example15', 'https://img.example.com/chickensalad.jpg',false),
        (16, '계란찜', 1, 6, 15, '뚝배기에 보들보들하게 쪄낸 부드러운 계란찜입니다.', 'https://youtube.com/watch?v=example16',
-        'https://img.example.com/gyeranjjim.jpg'),
+        'https://img.example.com/gyeranjjim.jpg',false),
        (17, '어묵탕', 1, 6, 20, '시원하고 깊은 국물 맛이 일품인 길거리 포차 메뉴입니다.',
-        'https://youtube.com/watch?v=example17', 'https://img.example.com/eomuk.jpg'),
+        'https://youtube.com/watch?v=example17', 'https://img.example.com/eomuk.jpg',false),
        (18, '돼지고기 수육', 1, 6, 60, '부드럽게 삶아낸 돼지고기를 새우젓에 곁들인 요리입니다.',
-        'https://youtube.com/watch?v=example18', 'https://img.example.com/suyuk.jpg'),
+        'https://youtube.com/watch?v=example18', 'https://img.example.com/suyuk.jpg',false),
        (19, '간장계란밥', 1, 3, 10, '바쁜 아침 5분이면 완성되는 초간단 한 그릇 요리입니다.',
-        'https://youtube.com/watch?v=example19', 'https://img.example.com/ganjanggyeran.jpg'),
+        'https://youtube.com/watch?v=example19', 'https://img.example.com/ganjanggyeran.jpg',false),
        (20, '부대찌개', 1, 1, 30, '햄, 소시지, 김치가 어우러진 푸짐한 국민 찌개입니다.',
-        'https://youtube.com/watch?v=example20', 'https://img.example.com/budae.jpg');
+        'https://youtube.com/watch?v=example20', 'https://img.example.com/budae.jpg',false);
 -- ── RecipeIngredient ─────────────────────────────────────────
 INSERT INTO recipe_ingredient (recipe_id, ingredient_id, amount, unit, is_substitutable)
 VALUES
@@ -206,3 +206,9 @@ VALUES
 (13, 3, '크림을 넣고 약불에서 천천히 졸인다.'),
 (13, 4, '삶은 면을 넣고 소스와 잘 버무린다.'),
 (13, 5, '소금, 후추로 간을 맞추고 파마산 치즈를 뿌려 완성한다.');
+
+
+insert into users(name, social_id, social_provider, user_role, email, public_id , is_deleted)
+VALUES (
+        '홍종민',4413420704,'KAKAO','USER','gwa7417@gmail.com','88433dfbaa3c43eeb5fcd46fc5649c97',false
+       )
