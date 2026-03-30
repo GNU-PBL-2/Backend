@@ -1,4 +1,4 @@
-package gnu.project.pbl2.recipe.enumurated;
+package gnu.project.pbl2.recipe.enumerated;
 
 public enum RecipeTab {
     ALL,        // 전체

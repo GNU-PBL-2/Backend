@@ -1,4 +1,4 @@
-package gnu.project.pbl2.fridge.enumurated;
+package gnu.project.pbl2.fridge.enumerated;
 
 public enum FridgeStatus {
     ENOUGH,

@@ -1,6 +1,6 @@
 package gnu.project.pbl2.recipe.dto.request;
 
-import gnu.project.pbl2.recipe.enumurated.RecipeTab;
+import gnu.project.pbl2.recipe.enumerated.RecipeTab;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 

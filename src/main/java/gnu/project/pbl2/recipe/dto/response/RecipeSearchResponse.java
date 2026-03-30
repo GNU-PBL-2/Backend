@@ -8,7 +8,7 @@ public record RecipeSearchResponse(
     Integer cookTimeMin,
     boolean cookable,               // "조리가능" 뱃지
     int expiringIngredientCount,    // "임박재료 N개" 뱃지
-    boolean favorite                // 하트 채움 여부
+    boolean isFavorite                // 하트 채움 여부
 ) {
     // 1단계: 레시피 기본 정보만으로 생성 (뱃지는 기본값)
     public static RecipeSearchResponse ofBase(
