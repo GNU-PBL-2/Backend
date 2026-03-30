@@ -1,8 +1,11 @@
 package gnu.project.pbl2.recipe.service;
 
+import static gnu.project.pbl2.fridge.enumurated.FridgeStatus.*;
+
 import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.common.error.ErrorCode;
 import gnu.project.pbl2.common.exception.BusinessException;
+import gnu.project.pbl2.fridge.enumurated.FridgeStatus;
 import gnu.project.pbl2.fridge.repository.FridgeRepository;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeResponseDto;
@@ -115,17 +118,17 @@ public class RecipeService {
         );
     }
 
-    private RecipeResponseDto.FridgeStatus resolveFridgeStatus(
+    private FridgeStatus resolveFridgeStatus(
         final Long ingredientId,
         final Set<Long> myIngredientIds,
         final Set<Long> expiringIngredientIds
     ) {
         if (!myIngredientIds.contains(ingredientId)) {
-            return RecipeResponseDto.FridgeStatus.NONE;
+            return NONE;
         }
         if (expiringIngredientIds.contains(ingredientId)) {
-            return RecipeResponseDto.FridgeStatus.EXPIRING;
+            return EXPIRING;
         }
-        return RecipeResponseDto.FridgeStatus.ENOUGH;
+        return ENOUGH;
     }
 }

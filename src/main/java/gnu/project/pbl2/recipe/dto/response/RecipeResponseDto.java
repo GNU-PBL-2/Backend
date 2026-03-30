@@ -1,5 +1,6 @@
 package gnu.project.pbl2.recipe.dto.response;
 
+import gnu.project.pbl2.fridge.enumurated.FridgeStatus;
 import java.util.List;
 
 public record RecipeResponseDto(
@@ -25,11 +26,6 @@ public record RecipeResponseDto(
         FridgeStatus fridgeStatus
     ) {}
 
-    public enum FridgeStatus {
-        ENOUGH,
-        EXPIRING,
-        NONE
-    }
 
     public record RecipeStepDetail(
         int stepOrder,
