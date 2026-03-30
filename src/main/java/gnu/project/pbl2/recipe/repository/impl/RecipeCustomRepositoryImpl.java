@@ -6,6 +6,7 @@ import static gnu.project.pbl2.fridge.entity.QFridge.fridge;
 import static gnu.project.pbl2.recipe.entity.QFavorite.favorite;
 import static gnu.project.pbl2.recipe.entity.QRecipe.recipe;
 import static gnu.project.pbl2.recipe.entity.QRecipeIngredient.recipeIngredient;
+import static gnu.project.pbl2.recipe.entity.QRecipeStep.recipeStep;
 
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
@@ -16,9 +17,11 @@ import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
+import gnu.project.pbl2.recipe.entity.Recipe;
 import gnu.project.pbl2.recipe.repository.RecipeCustomRepository;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -160,7 +163,31 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
         );
     }
 
-    // ── 조건 서브쿼리 ─────────────────────────────────────────
+    public Optional<Recipe> findDetailById(Long recipeId) {
+        Recipe result = queryFactory
+            .selectFrom(recipe)
+            .leftJoin(recipe.category).fetchJoin()
+            .leftJoin(recipe.taste).fetchJoin()
+            .leftJoin(recipe.ingredients, recipeIngredient).fetchJoin()
+            .leftJoin(recipeIngredient.ingredient).fetchJoin()
+            .leftJoin(recipe.steps, recipeStep).fetchJoin()
+            .where(recipe.id.eq(recipeId))
+            .fetchOne();
+
+        return Optional.ofNullable(result);
+    }
+
+    @Override
+    public boolean isFavorite(Long recipeId, Long userId) {
+        return queryFactory
+            .selectOne()
+            .from(favorite)
+            .where(
+                favorite.recipe.id.eq(recipeId),
+                favorite.user.id.eq(userId)
+            )
+            .fetchFirst() != null;
+    }
 
     private BooleanExpression noMissingIngredient(Long userId) {
         return JPAExpressions

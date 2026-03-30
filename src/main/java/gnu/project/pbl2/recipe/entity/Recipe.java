@@ -14,7 +14,9 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,10 +55,10 @@ public class Recipe extends BaseEntity {
     private String thumbnailUrl;
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-    private List<RecipeStep> steps = new ArrayList<>();
+    private Set<RecipeStep> steps = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
-    private List<RecipeIngredient> ingredients = new ArrayList<>();
+    private Set<RecipeIngredient> ingredients = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<Favorite> favorites = new ArrayList<>();
