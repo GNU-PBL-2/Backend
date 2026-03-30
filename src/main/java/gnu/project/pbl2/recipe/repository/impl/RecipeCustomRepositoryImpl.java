@@ -99,7 +99,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             ))
             .from(recipe)
             .leftJoin(recipe.category)
-            .where(condition,recipe.isDeleted.isFalse())
+            .where(condition, recipe.isDeleted.isFalse())
             .orderBy(orders)
             .offset((long) request.page() * request.size())
             .limit(request.size())
@@ -163,7 +163,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
         );
     }
 
-    public Optional<Recipe> findDetailById(Long recipeId) {
+    public Optional<Recipe> findDetailById(final Long recipeId) {
         Recipe result = queryFactory
             .selectFrom(recipe)
             .leftJoin(recipe.category).fetchJoin()

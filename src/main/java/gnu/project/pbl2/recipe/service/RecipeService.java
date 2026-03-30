@@ -65,14 +65,15 @@ public class RecipeService {
         final Long recipeId,
         final Accessor accessor
     ) {
-        Long userId = accessor.getUserId();
+        final Long userId = accessor.getUserId();
 
-        Recipe foundRecipe = recipeRepository.findDetailById(recipeId)
+        final Recipe foundRecipe = recipeRepository.findDetailById(recipeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
 
         boolean isFavorite = recipeRepository.isFavorite(recipeId, userId);
 
         Set<Long> myIngredientIds = fridgeRepository.findIngredientIdsByUserId(userId);
+
         Set<Long> expiringIngredientIds = fridgeRepository
             .findExpiringIngredientIds(userId, LocalDate.now().plusDays(3));
 
@@ -84,8 +85,11 @@ public class RecipeService {
                     ri.getAmount(),
                     ri.getUnit(),
                     ri.isSubstitutable(),
-                    resolveFridgeStatus(ri.getIngredient().getId(), myIngredientIds,
-                        expiringIngredientIds)
+                    resolveFridgeStatus(
+                        ri.getIngredient().getId(),
+                        myIngredientIds,
+                        expiringIngredientIds
+                    )
                 ))
                 .toList();
 
@@ -111,11 +115,10 @@ public class RecipeService {
         );
     }
 
-    // 냉장고 상태 계산 — 없음 / 임박 / 여유 순으로 판단
     private RecipeResponseDto.FridgeStatus resolveFridgeStatus(
-        Long ingredientId,
-        Set<Long> myIngredientIds,
-        Set<Long> expiringIngredientIds
+        final Long ingredientId,
+        final Set<Long> myIngredientIds,
+        final Set<Long> expiringIngredientIds
     ) {
         if (!myIngredientIds.contains(ingredientId)) {
             return RecipeResponseDto.FridgeStatus.NONE;

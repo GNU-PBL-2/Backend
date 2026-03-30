@@ -20,7 +20,6 @@ public interface RecipeCustomRepository {
 
     Set<Long> findFavoriteRecipeIds(List<Long> recipeIds, Long userId);
 
-    // 상세 조회 추가
     Optional<Recipe> findDetailById(Long recipeId);
     boolean isFavorite(Long recipeId, Long userId);
 
