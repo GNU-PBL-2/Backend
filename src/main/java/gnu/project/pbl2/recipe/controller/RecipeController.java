@@ -2,6 +2,7 @@ package gnu.project.pbl2.recipe.controller;
 
 import gnu.project.pbl2.auth.aop.Auth;
 import gnu.project.pbl2.auth.entity.Accessor;
+import gnu.project.pbl2.recipe.controller.docs.RecipeDocs;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeResponseDto;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/recipes")
-public class RecipeController {
+public class RecipeController implements RecipeDocs {
 
     private final RecipeService recipeService;
 
