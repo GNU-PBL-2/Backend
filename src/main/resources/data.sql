@@ -208,14 +208,7 @@ VALUES
 (13, 5, '소금, 후추로 간을 맞추고 파마산 치즈를 뿌려 완성한다.');
 
 
-INSERT INTO users(name, social_id, social_provider, user_role, email, public_id, id, is_deleted)
+insert into users(name, social_id, social_provider, user_role, email, public_id , is_deleted)
 VALUES (
-           '홍종민',
-           4413420704,
-           'KAKAO',
-           'USER',
-           'gwa7417@gmail.com',
-           X'88433dfbaa3c43eeb5fcd46fc5649c97',
-           1,
-           false
-       );
+        '홍종민',4413420704,'KAKAO','USER','gwa7417@gmail.com','88433dfbaa3c43eeb5fcd46fc5649c97',false
+       )

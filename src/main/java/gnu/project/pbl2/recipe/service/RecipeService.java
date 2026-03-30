@@ -88,7 +88,7 @@ public class RecipeService {
                     ri.getAmount(),
                     ri.getUnit(),
                     ri.isSubstitutable(),
-                    resolveFridgeStatus(
+                    getFridgeStatus(
                         ri.getIngredient().getId(),
                         myIngredientIds,
                         expiringIngredientIds
@@ -118,7 +118,7 @@ public class RecipeService {
         );
     }
 
-    private FridgeStatus resolveFridgeStatus(
+    private FridgeStatus getFridgeStatus(
         final Long ingredientId,
         final Set<Long> myIngredientIds,
         final Set<Long> expiringIngredientIds
