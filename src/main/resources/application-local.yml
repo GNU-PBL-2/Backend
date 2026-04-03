@@ -30,3 +30,5 @@ oauth:
     user-info-uri: https://kapi.kakao.com/v2/user/me
     secret: ${KAKAO_CLIENT_SECRET}
 
+fastapi:
+  base-url: http://localhost:8000

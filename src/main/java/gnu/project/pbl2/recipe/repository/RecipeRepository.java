@@ -7,4 +7,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface RecipeRepository extends JpaRepository<Recipe, Long> ,RecipeCustomRepository{
 
+    boolean existsByYoutubeUrl(String youtubeUrl);
+
+
 }

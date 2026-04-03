@@ -62,4 +62,31 @@ public class Recipe extends BaseEntity {
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
     private List<Favorite> favorites = new ArrayList<>();
+    public static Recipe create(
+        String title,
+        Category category,
+        Taste taste,
+        Integer cookTimeMin,
+        String description,
+        String youtubeUrl
+    ) {
+        Recipe recipe = new Recipe();
+        recipe.title = title;
+        recipe.category = category;
+        recipe.taste = taste;
+        recipe.cookTimeMin = cookTimeMin;
+        recipe.description = description;
+        recipe.youtubeUrl = youtubeUrl;
+        return recipe;
+    }
+
+    // ── 도메인 행위 ───────────────────────────────────────────
+    public void addIngredients(List<RecipeIngredient> recipeIngredients) {
+        this.ingredients.addAll(recipeIngredients);
+    }
+
+    public void addSteps(List<RecipeStep> recipeSteps) {
+        this.steps.addAll(recipeSteps);
+    }
+
 }

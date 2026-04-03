@@ -2,7 +2,7 @@ package gnu.project.pbl2.recipe.entity;
 
 
 import gnu.project.pbl2.common.entity.BaseEntity;
-import gnu.project.pbl2.common.entity.Ingredient;
+import gnu.project.pbl2.ingredient.entity.Ingredient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

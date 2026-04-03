@@ -30,4 +30,13 @@ public class RecipeStep extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipe_id")
     private Recipe recipe;
+
+    public static RecipeStep of(Recipe recipe, int stepOrder, String description) {
+        RecipeStep step = new RecipeStep();
+        step.recipe = recipe;
+        step.stepOrder = stepOrder;
+        step.description = description;
+        return step;
+    }
+
 }

@@ -1,5 +1,6 @@
 package gnu.project.pbl2.common.entity;
 
+import gnu.project.pbl2.ingredient.entity.Ingredient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
