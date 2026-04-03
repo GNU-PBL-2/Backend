@@ -15,7 +15,7 @@ public class GeminiService {
 
     private final WebClient webClient;
 
-    @Value("${fastapi.base-url}")  // application.yml에 추가
+    @Value("${fastapi.base-url}")
     private String fastapiBaseUrl;
 
     public GeminiRecipeDto extractRecipeFromYoutube(String youtubeUrl) {
