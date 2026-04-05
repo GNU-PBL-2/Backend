@@ -31,8 +31,13 @@ public enum ErrorCode {
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "USER5001","해당 유저를 찾을 수 없습니다"),
 
 
-    RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND,"RECIPE6001" ,"해당 레시피를 찾을 수 없습니다" );
+    RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND,"RECIPE6001" ,"해당 레시피를 찾을 수 없습니다" ),
+    RECIPE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"RECIPE6002" ,"해당 레시피가 이미 존재합니다." ),
 
+
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND,"CATEGORY6001" ,"해당 카테고리를 찾을 수 없습니다"),
+
+    TASTE_NOT_FOUND(HttpStatus.NOT_FOUND,"TASTE7001", "해당 맛을 찾을 수 없습니다");
     private final HttpStatus status;
     private final String code;
     private final String message;

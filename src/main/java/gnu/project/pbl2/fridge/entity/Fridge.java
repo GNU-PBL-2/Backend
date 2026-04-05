@@ -1,6 +1,6 @@
 package gnu.project.pbl2.fridge.entity;
 
-import gnu.project.pbl2.common.entity.Ingredient;
+import gnu.project.pbl2.ingredient.entity.Ingredient;
 import gnu.project.pbl2.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

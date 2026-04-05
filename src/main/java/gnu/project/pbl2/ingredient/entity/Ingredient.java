@@ -1,5 +1,6 @@
-package gnu.project.pbl2.common.entity;
+package gnu.project.pbl2.ingredient.entity;
 
+import gnu.project.pbl2.common.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -10,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "ingredient")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class Ingredient {
 
     @Id
@@ -31,9 +34,12 @@ public class Ingredient {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    public Ingredient(String name, Category category) {
-        this.name = name;
-        this.category = category;
+
+    public static Ingredient create(String name, Category category) {
+        Ingredient ingredient = new Ingredient();
+        ingredient.name = name;
+        ingredient.category = category;
+        return ingredient;
     }
 
     public void updateName(String name) {
