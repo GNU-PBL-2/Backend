@@ -2,7 +2,6 @@ package gnu.project.pbl2.admin.service;
 
 import gnu.project.pbl2.admin.dto.GeminiRecipeDto;
 import java.util.Map;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -10,13 +9,19 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class GeminiService {
 
     private final WebClient webClient;
 
-    @Value("${fastapi.base-url}")
-    private String fastapiBaseUrl;
+    private final String fastapiBaseUrl;
+
+    public GeminiService(
+        final WebClient webClient,
+        @Value("${fastapi.base-url}") final String fastapiBaseUrl
+    ) {
+        this.webClient = webClient;
+        this.fastapiBaseUrl = fastapiBaseUrl;
+    }
 
     public GeminiRecipeDto extractRecipeFromYoutube(String youtubeUrl) {
         log.info("FastAPI 레시피 분석 요청: {}", youtubeUrl);

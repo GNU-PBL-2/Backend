@@ -19,6 +19,7 @@ public class AdminRecipeController implements AdminRecipeControllerDocs {
 
     private final RecipeImportService recipeImportService;
 
+    //TODO : @OnlyAdmin 추가
     @PostMapping("/import")
     @Override
     public ResponseEntity<Void> importRecipe(@RequestBody @Valid final RecipeImportRequest request) {
