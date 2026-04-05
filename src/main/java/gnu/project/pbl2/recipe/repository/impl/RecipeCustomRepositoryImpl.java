@@ -253,7 +253,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .leftJoin(recipe.taste).fetchJoin()
             .leftJoin(recipe.ingredients, recipeIngredient).fetchJoin()
             .leftJoin(recipeIngredient.ingredient).fetchJoin()
-            .where(recipe.id.eq(recipeId))
+            .where(recipe.id.eq(recipeId),recipe.isDeleted.eq(false))
             .fetchOne();
 
         if (result == null) {

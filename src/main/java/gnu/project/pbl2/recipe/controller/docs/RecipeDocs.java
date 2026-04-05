@@ -2,6 +2,7 @@ package gnu.project.pbl2.recipe.controller.docs;
 
 import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
+import gnu.project.pbl2.recipe.dto.request.RecipeUpdateRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeResponseDto;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,24 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "Recipe", description = "레시피 API")
 public interface RecipeDocs {
 
     /**
-     * 레시피 목록 조회 ------- (1)
-     * <p>
-     * 키워드 및 탭 조건(전체, 조리 가능, 임박, 즐겨찾기)에 따라
-     * 레시피 목록을 페이징 형태로 조회한다.
-     * <p>
-     * - ALL: 전체 레시피 조회
-     * - COOKABLE: 보유 재료로 조리 가능한 레시피
-     * - EXPIRING: 임박 재료 포함 레시피
-     * - FAVORITE: 즐겨찾기 레시피
-     *
-     * @param request 검색 조건 (키워드, 탭, 페이지)
-     * @param accessor 인증된 사용자 정보
-     * @return 레시피 목록 (Page)
+     * 레시피 목록 조회
      */
     @Operation(
         summary = "레시피 목록 조회",
@@ -51,16 +41,6 @@ public interface RecipeDocs {
             responseCode = "200",
             description = "조회 성공",
             content = @Content(schema = @Schema(implementation = RecipeSearchResponse.class))
-        ),
-        @ApiResponse(
-            responseCode = "400",
-            description = "잘못된 요청 (페이지, 사이즈 등)",
-            content = @Content(schema = @Schema(hidden = true))
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "인증되지 않은 사용자",
-            content = @Content(schema = @Schema(hidden = true))
         )
     })
     ResponseEntity<Page<RecipeSearchResponse>> getRecipes(
@@ -72,53 +52,75 @@ public interface RecipeDocs {
     );
 
     /**
-     * 레시피 상세 조회 ------- (1)
-     * <p>
-     * 레시피 ID를 기반으로 상세 정보를 조회한다.
-     * <p>
-     * 반환 정보:
-     * - 기본 정보 (제목, 썸네일, 조리시간)
-     * - 재료 목록
-     * - 조리 단계
-     * - 카테고리 / 맛 정보
-     *
-     * @param id 레시피 ID
-     * @param accessor 인증된 사용자 정보
-     * @return 레시피 상세 정보
+     * 레시피 상세 조회
      */
     @Operation(
         summary = "레시피 상세 조회",
+        description = "레시피 ID를 기반으로 상세 정보를 조회합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "조회 성공"),
+        @ApiResponse(responseCode = "404", description = "레시피를 찾을 수 없음", content = @Content(schema = @Schema(hidden = true)))
+    })
+    ResponseEntity<RecipeResponseDto> getRecipe(
+        @Parameter(description = "레시피 ID", example = "1")
+        Long id,
+
+        @Parameter(hidden = true)
+        Accessor accessor
+    );
+
+    /**
+     * 레시피 수정 (관리자 전용)
+     */
+    @Operation(
+        summary = "레시피 수정 (관리자)",
         description = """
-            레시피 ID를 기반으로 상세 정보를 조회합니다.
+            레시피 정보를 수정합니다. 
             
-            포함 정보:
-            - 레시피 기본 정보
-            - 재료 목록
-            - 조리 단계
-            - 카테고리 및 맛
-            
-            사용자 기준으로 즐겨찾기 여부도 포함될 수 있습니다.
+            **주의 사항:**
+            - 재료(ingredients)와 조리 단계(steps)는 기존 데이터를 삭제하고 전달받은 데이터로 **전체 교체**됩니다.
+            - 카테고리와 맛 정보는 전달된 이름을 기반으로 DB에서 찾아 연결합니다.
             """
     )
     @ApiResponses({
         @ApiResponse(
             responseCode = "200",
-            description = "조회 성공",
-            content = @Content(schema = @Schema(implementation = RecipeResponseDto.class))
+            description = "수정 성공",
+            content = @Content(schema = @Schema(implementation = Long.class))
         ),
-        @ApiResponse(
-            responseCode = "404",
-            description = "레시피를 찾을 수 없음",
-            content = @Content(schema = @Schema(hidden = true))
-        ),
-        @ApiResponse(
-            responseCode = "401",
-            description = "인증되지 않은 사용자",
-            content = @Content(schema = @Schema(hidden = true))
-        )
+        @ApiResponse(responseCode = "400", description = "잘못된 요청 데이터", content = @Content(schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "404", description = "레시피를 찾을 수 없음", content = @Content(schema = @Schema(hidden = true)))
     })
-    ResponseEntity<RecipeResponseDto> getRecipe(
-        @Parameter(description = "레시피 ID", example = "1")
+    ResponseEntity<Long> updateRecipe(
+        @Parameter(description = "수정할 레시피 ID", example = "1")
+        Long id,
+
+        @RequestBody RecipeUpdateRequest updateRequest,
+
+        @Parameter(hidden = true)
+        Accessor accessor
+    );
+
+    /**
+     * 레시피 삭제 (관리자 전용)
+     */
+    @Operation(
+        summary = "레시피 삭제 (관리자)",
+        description = "레시피 ID를 기반으로 레시피를 삭제(상태 변경)합니다."
+    )
+    @ApiResponses({
+        @ApiResponse(
+            responseCode = "200",
+            description = "삭제 성공",
+            content = @Content(schema = @Schema(implementation = Long.class))
+        ),
+        @ApiResponse(responseCode = "403", description = "권한 없음", content = @Content(schema = @Schema(hidden = true))),
+        @ApiResponse(responseCode = "404", description = "레시피를 찾을 수 없음", content = @Content(schema = @Schema(hidden = true)))
+    })
+    ResponseEntity<Long> deleteRecipe(
+        @Parameter(description = "삭제할 레시피 ID", example = "1")
         Long id,
 
         @Parameter(hidden = true)
