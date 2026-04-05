@@ -54,13 +54,13 @@ public class Recipe extends BaseEntity {
     @Column()
     private String thumbnailUrl;
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RecipeStep> steps = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<RecipeIngredient> ingredients = new LinkedHashSet<>();
 
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
     public static Recipe create(
         String title,
@@ -80,7 +80,28 @@ public class Recipe extends BaseEntity {
         return recipe;
     }
 
-    // ── 도메인 행위 ───────────────────────────────────────────
+
+    // 수정 로직 (정적 메서드가 아닌 인스턴스 메서드)
+    public void update(
+        String title,
+        Category category,
+        Taste taste,
+        Integer cookTimeMin,
+        String description
+    ) {
+        this.title = title;
+        this.category = category;
+        this.taste = taste;
+        this.cookTimeMin = cookTimeMin;
+        this.description = description;
+    }
+
+    // 기존 재료와 단계를 초기화하는 메서드
+    public void clearCollections() {
+        this.ingredients.clear();
+        this.steps.clear();
+    }
+
     public void addIngredients(List<RecipeIngredient> recipeIngredients) {
         this.ingredients.addAll(recipeIngredients);
     }

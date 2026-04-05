@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@EqualsAndHashCode(of = "id", callSuper = false, onlyExplicitlyIncluded = true)
+@EqualsAndHashCode(of = "id", callSuper = false)
 @Getter
 public class RecipeIngredient extends BaseEntity {
 
