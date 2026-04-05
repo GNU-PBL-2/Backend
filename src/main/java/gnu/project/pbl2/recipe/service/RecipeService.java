@@ -3,6 +3,7 @@ package gnu.project.pbl2.recipe.service;
 import static gnu.project.pbl2.fridge.enumerated.FridgeStatus.ENOUGH;
 import static gnu.project.pbl2.fridge.enumerated.FridgeStatus.EXPIRING;
 import static gnu.project.pbl2.fridge.enumerated.FridgeStatus.NONE;
+import static gnu.project.pbl2.recipe.dto.response.RecipeResponseDto.*;
 
 import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.common.entity.Category;
@@ -22,7 +23,9 @@ import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
 import gnu.project.pbl2.recipe.entity.Recipe;
 import gnu.project.pbl2.recipe.entity.RecipeIngredient;
 import gnu.project.pbl2.recipe.entity.RecipeStep;
+import gnu.project.pbl2.recipe.repository.RecipeIngredientRepository;
 import gnu.project.pbl2.recipe.repository.RecipeRepository;
+import gnu.project.pbl2.recipe.repository.RecipeStepRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -45,6 +48,8 @@ public class RecipeService {
     private final CategoryRepository categoryRepository;
     private final TasteRepository tasteRepository;
     private final IngredientRepository ingredientRepository;
+    private final RecipeIngredientRepository recipeIngredientRepository;
+    private final RecipeStepRepository recipeStepRepository;
 
     @Transactional(readOnly = true)
     public Page<RecipeSearchResponse> getRecipes(
@@ -94,9 +99,9 @@ public class RecipeService {
         Set<Long> expiringIngredientIds = fridgeRepository
             .findExpiringIngredientIds(userId, LocalDate.now().plusDays(3));
 
-        List<RecipeResponseDto.RecipeIngredientDetail> ingredients =
+        List<RecipeIngredientDetail> ingredients =
             foundRecipe.getIngredients().stream()
-                .map(ri -> new RecipeResponseDto.RecipeIngredientDetail(
+                .map(ri -> new RecipeIngredientDetail(
                     ri.getIngredient().getId(),
                     ri.getIngredient().getName(),
                     ri.getAmount(),
@@ -110,10 +115,10 @@ public class RecipeService {
                 ))
                 .toList();
 
-        List<RecipeResponseDto.RecipeStepDetail> steps =
+        List<RecipeStepDetail> steps =
             foundRecipe.getSteps().stream()
                 .sorted(Comparator.comparingInt(RecipeStep::getStepOrder))
-                .map(s -> new RecipeResponseDto.RecipeStepDetail(
+                .map(s -> new RecipeStepDetail(
                     s.getStepOrder(),
                     s.getDescription()
                 ))
@@ -145,6 +150,7 @@ public class RecipeService {
         }
         return ENOUGH;
     }
+
     @Transactional
     public Long deleteRecipe(final Long id, final Accessor accessor) {
         final Recipe recipe = recipeRepository.findDetailById(id)
@@ -152,8 +158,13 @@ public class RecipeService {
         recipe.delete();
         return recipe.getId();
     }
+
     @Transactional
-    public Long updateRecipe(final Long id,final RecipeUpdateRequest request,final Accessor accessor) {
+    public Long updateRecipe(
+        final Long id,
+        final RecipeUpdateRequest request,
+        final Accessor accessor
+    ) {
         Recipe recipe = recipeRepository.findById(id)
             .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
 
@@ -175,15 +186,19 @@ public class RecipeService {
         List<RecipeIngredient> newIngredients = request.ingredients().stream()
             .map(ingDto -> {
                 Ingredient ingredient = ingredientRepository.findByName(ingDto.name())
-                    .orElseGet(() -> ingredientRepository.save(Ingredient.create(ingDto.name(), category)));
-                return RecipeIngredient.of(recipe, ingredient, ingDto.amount(), ingDto.unit(), ingDto.isSubstitutable());
+                    .orElseGet(() -> ingredientRepository.save(
+                        Ingredient.create(ingDto.name(), category)));
+                return recipeIngredientRepository.save(
+                    RecipeIngredient.of(recipe, ingredient, ingDto.amount(), ingDto.unit(),
+                        ingDto.isSubstitutable()));
             })
             .toList();
 
         List<RecipeStep> newSteps = new ArrayList<>();
 
         for (int i = 0; i < request.steps().size(); i++) {
-            newSteps.add(RecipeStep.of(recipe, i + 1, request.steps().get(i)));
+            newSteps.add(
+                recipeStepRepository.save(RecipeStep.of(recipe, i + 1, request.steps().get(i))));
         }
 
         recipe.addIngredients(newIngredients);
