@@ -25,7 +25,7 @@ public class AdminRecipeController implements AdminRecipeControllerDocs {
     public ResponseEntity<Void> importRecipe(@RequestBody @Valid final RecipeImportRequest request) {
         Long recipeId = recipeImportService.importFromYoutube(request.youtubeUrl());
         return ResponseEntity
-            .created(URI.create("/api/v1/recipe/" + recipeId))
+            .created(URI.create("/api/v1/recipes/" + recipeId))
             .build();
     }
 
