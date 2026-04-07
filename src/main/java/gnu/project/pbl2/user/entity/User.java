@@ -37,7 +37,7 @@ public class User extends BaseEntity implements OauthUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "member_id")
     private Long id;
 
     @Column(columnDefinition = "BINARY(16)", unique = true, updatable = false, nullable = false)

@@ -1,5 +1,6 @@
-package gnu.project.pbl2;
+package gnu.project.pbl2.Fridge.entity;
 
+import gnu.project.pbl2.common.entity.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,16 +32,16 @@ public class Ingredient {
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    public Ingredient(String name, Category category) {
+    public Ingredient(final String name, final Category category) {
         this.name = name;
         this.category = category;
     }
 
-    public void updateName(String name) {
+    public void updateName(final String name) {
         this.name = name;
     }
 
-    public void updateCategory(Category category) {
+    public void updateCategory(final Category category) {
         this.category = category;
     }
 }

@@ -1,6 +1,5 @@
-package gnu.project.pbl2;
+package gnu.project.pbl2.Fridge.entity;
 
-import gnu.project.pbl2.common.entity.Ingredient;
 import gnu.project.pbl2.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -30,8 +29,8 @@ public class Fridge {
     private Long fridgeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "member_id", referencedColumnName = "member_id", nullable = false)
+    private User member;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ingredient_id", nullable = false)
@@ -49,37 +48,13 @@ public class Fridge {
     @Column(name = "registered_at", nullable = false)
     private LocalDateTime registeredAt;
 
-    public Fridge(
-            User user,
-            Ingredient ingredient,
-            BigDecimal quantity,
-            String unit,
-            LocalDate expiryDate,
-            LocalDateTime registeredAt
+    private Fridge(
+        final User member,
+        final Ingredient ingredient,
+        final BigDecimal quantity,
+        final String unit,
+        final LocalDate expiryDate
     ) {
-        this.user = user;
-        this.ingredient = ingredient;
-        this.quantity = quantity;
-        this.unit = unit;
-        this.expiryDate = expiryDate;
-        this.registeredAt = registeredAt;
-    }
-
-    public void updateQuantity(BigDecimal quantity) {
-        this.quantity = quantity;
-    }
-
-    public void updateUnit(String unit) {
-        this.unit = unit;
-    }
-
-    public void updateExpiryDate(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-}
-
-    public Fridge(Member member, Ingredient ingredient,
-                  BigDecimal quantity, String unit, LocalDate expiryDate) {
         this.member = member;
         this.ingredient = ingredient;
         this.quantity = quantity;
@@ -87,3 +62,26 @@ public class Fridge {
         this.expiryDate = expiryDate;
         this.registeredAt = LocalDateTime.now();
     }
+
+    public static Fridge create(
+        final User member,
+        final Ingredient ingredient,
+        final BigDecimal quantity,
+        final String unit,
+        final LocalDate expiryDate
+    ) {
+        return new Fridge(member, ingredient, quantity, unit, expiryDate);
+    }
+
+    public void updateQuantity(final BigDecimal quantity) {
+        this.quantity = quantity;
+    }
+
+    public void updateUnit(final String unit) {
+        this.unit = unit;
+    }
+
+    public void updateExpiryDate(final LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+}

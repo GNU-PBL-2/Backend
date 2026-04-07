@@ -1,4 +1,4 @@
-package gnu.project.pbl2;
+package gnu.project.pbl2.Fridge.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,12 +45,12 @@ public class StorageMethod {
     private String tip;
 
     public StorageMethod(
-            Ingredient ingredient,
-            String storageType,
-            BigDecimal minTemp,
-            BigDecimal maxTemp,
-            Integer durationDays,
-            String tip
+        final Ingredient ingredient,
+        final String storageType,
+        final BigDecimal minTemp,
+        final BigDecimal maxTemp,
+        final Integer durationDays,
+        final String tip
     ) {
         this.ingredient = ingredient;
         this.storageType = storageType;
