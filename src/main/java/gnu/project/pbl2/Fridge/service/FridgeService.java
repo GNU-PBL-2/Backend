@@ -1,6 +1,7 @@
 package gnu.project.pbl2.Fridge.service;
 
 import gnu.project.pbl2.Fridge.dto.request.FridgeCreateRequest;
+import gnu.project.pbl2.Fridge.dto.request.FridgeUpdateRequest;
 import gnu.project.pbl2.Fridge.dto.response.FridgeResponse;
 import gnu.project.pbl2.Fridge.entity.Fridge;
 import gnu.project.pbl2.Fridge.entity.Ingredient;
@@ -46,5 +47,28 @@ public class FridgeService {
         );
 
         return FridgeResponse.from(fridgeRepository.save(fridge));
+    }
+
+    @Transactional
+    public FridgeResponse updateIngredient(
+        final Long fridgeId,
+        final FridgeUpdateRequest request
+    ) {
+        final Fridge fridge = fridgeRepository.findById(fridgeId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 냉장고 재료입니다."));
+
+        fridge.updateQuantity(request.quantity());
+        fridge.updateUnit(request.unit());
+        fridge.updateExpiryDate(request.expiryDate());
+
+        return FridgeResponse.from(fridge);
+    }
+
+    @Transactional
+    public void deleteIngredient(final Long fridgeId) {
+        final Fridge fridge = fridgeRepository.findById(fridgeId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 냉장고 재료입니다."));
+
+        fridgeRepository.delete(fridge);
     }
 }
