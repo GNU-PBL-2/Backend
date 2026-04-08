@@ -52,7 +52,7 @@ public class StorageMethod {
             BigDecimal maxTemp,
             Integer durationDays,
             String tip
-    ) {
+    )
         this.ingredient = ingredient;
         this.storageType = storageType;
         this.minTemp = minTemp;
