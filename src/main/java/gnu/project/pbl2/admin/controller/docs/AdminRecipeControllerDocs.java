@@ -1,6 +1,7 @@
 package gnu.project.pbl2.admin.controller.docs;
 
 import gnu.project.pbl2.admin.dto.RecipeImportRequest;
+import gnu.project.pbl2.auth.entity.Accessor;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -18,5 +19,5 @@ public interface AdminRecipeControllerDocs {
     @ApiResponses({
         @ApiResponse(responseCode = "500", description = "Gemini 분석 실패")
     })
-    ResponseEntity<Void> importRecipe(@RequestBody RecipeImportRequest request);
+    ResponseEntity<Void> importRecipe(@RequestBody RecipeImportRequest request, Accessor accessor);
 }

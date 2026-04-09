@@ -155,12 +155,12 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .orderBy(orders)
             .offset((long) request.page() * request.size())
             .limit(request.size())
-            .fetch();
+        .fetch();
 
         long total = queryFactory
             .select(recipe.count())
             .from(recipe)
-            .where(condition)
+            .where(condition, recipe.isDeleted.isFalse())
             .fetchOne();
 
         return new PageImpl<>(content, PageRequest.of(request.page(), request.size()), total);
