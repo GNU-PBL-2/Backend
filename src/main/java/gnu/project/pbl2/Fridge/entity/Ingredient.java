@@ -14,43 +14,44 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+/** 재료 마스터 엔티티 */
 @Entity
 @Table(name = "ingredient")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-/**
- * 냉장고에서 사용할 재료 마스터 정보 엔티티.
- * 재료명과 카테고리 같은 기준 정보를 저장한다.
- */
 public class Ingredient {
 
-    // 재료 PK
+    /** 재료 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ingredient_id")
     private Long ingredientId;
 
-    // 재료 이름
+    /** 재료명 */
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    // 재료가 속한 카테고리
+    /** 카테고리 */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
 
-    // 새 재료 기준 정보를 생성한다.
     public Ingredient(final String name, final Category category) {
         this.name = name;
         this.category = category;
     }
 
-    // 재료명을 변경한다.
+    /** 재료 생성 */
+    public static Ingredient create(final String name, final Category category) {
+        return new Ingredient(name, category);
+    }
+
+    /** 이름 수정 */
     public void updateName(final String name) {
         this.name = name;
     }
 
-    // 재료 카테고리를 변경한다.
+    /** 카테고리 수정 */
     public void updateCategory(final Category category) {
         this.category = category;
     }
