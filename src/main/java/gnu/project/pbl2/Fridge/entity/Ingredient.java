@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,13 +20,14 @@ import lombok.NoArgsConstructor;
 @Table(name = "ingredient")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode
 public class Ingredient {
 
     /** 재료 ID */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ingredient_id")
-    private Long ingredientId;
+    @Column()
+    private Long id;
 
     /** 재료명 */
     @Column(name = "name", nullable = false, length = 100)
@@ -40,10 +42,11 @@ public class Ingredient {
         this.name = name;
         this.category = category;
     }
-
-    /** 재료 생성 */
-    public static Ingredient create(final String name, final Category category) {
-        return new Ingredient(name, category);
+    public static Ingredient create(String name, Category category) {
+        Ingredient ingredient = new Ingredient();
+        ingredient.name = name;
+        ingredient.category = category;
+        return ingredient;
     }
 
     /** 이름 수정 */
