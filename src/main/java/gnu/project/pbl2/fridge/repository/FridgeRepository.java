@@ -17,7 +17,7 @@ public interface FridgeRepository extends JpaRepository<Fridge, Long> {
     Set<Long> findExpiringIngredientIds(
         @Param("userId") final Long userId,
         @Param("threshold") final LocalDate threshold
-        );
+    );
     /** 회원별 냉장고 목록 조회 */
     List<Fridge> findAllByMember_Id(Long memberId);
 
