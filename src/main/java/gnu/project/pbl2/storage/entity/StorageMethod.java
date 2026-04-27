@@ -1,6 +1,6 @@
 package gnu.project.pbl2.storage.entity;
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.entity.Ingredient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

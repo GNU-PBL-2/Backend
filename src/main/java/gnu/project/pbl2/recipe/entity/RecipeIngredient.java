@@ -1,7 +1,7 @@
 package gnu.project.pbl2.recipe.entity;
 
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.entity.Ingredient;
 import gnu.project.pbl2.common.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

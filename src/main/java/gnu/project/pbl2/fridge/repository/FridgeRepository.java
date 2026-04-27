@@ -1,6 +1,6 @@
-package gnu.project.pbl2.Fridge.repository;
+package gnu.project.pbl2.fridge.repository;
 
-import gnu.project.pbl2.Fridge.entity.Fridge;
+import gnu.project.pbl2.fridge.entity.Fridge;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;

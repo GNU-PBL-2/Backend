@@ -1,4 +1,4 @@
-package gnu.project.pbl2.Fridge.entity;
+package gnu.project.pbl2.fridge.entity;
 
 import gnu.project.pbl2.common.entity.Category;
 import jakarta.persistence.Column;

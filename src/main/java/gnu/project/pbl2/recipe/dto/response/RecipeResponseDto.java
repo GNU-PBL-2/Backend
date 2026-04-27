@@ -1,6 +1,6 @@
 package gnu.project.pbl2.recipe.dto.response;
 
-import gnu.project.pbl2.Fridge.enumerated.FridgeStatus;
+import gnu.project.pbl2.fridge.enumerated.FridgeStatus;
 import java.util.List;
 
 public record RecipeResponseDto(

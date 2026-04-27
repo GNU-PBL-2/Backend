@@ -1,4 +1,4 @@
-package gnu.project.pbl2.Fridge.dto.request;
+package gnu.project.pbl2.fridge.dto.request;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,8 +1,8 @@
 package gnu.project.pbl2.storage.service;
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
-import gnu.project.pbl2.Fridge.repository.FridgeRepository;
-import gnu.project.pbl2.Fridge.repository.IngredientRepository;
+import gnu.project.pbl2.fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.repository.FridgeRepository;
+import gnu.project.pbl2.fridge.repository.IngredientRepository;
 import gnu.project.pbl2.common.entity.Category;
 import gnu.project.pbl2.common.error.ErrorCode;
 import gnu.project.pbl2.common.exception.BusinessException;
