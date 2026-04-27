@@ -1,6 +1,7 @@
 package gnu.project.pbl2.recipe.controller;
 
 import gnu.project.pbl2.auth.aop.Auth;
+import gnu.project.pbl2.auth.aop.OnlyAdmin;
 import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.recipe.controller.docs.RecipeDocs;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
@@ -28,7 +29,6 @@ public class RecipeController implements RecipeDocs {
 
     private final RecipeService recipeService;
 
-    //TODO : 레시피 수정, 삭제 구현
     @GetMapping()
     public ResponseEntity<Page<RecipeSearchResponse>> getRecipes(
         @ModelAttribute @Valid final RecipeSearchRequest request,
@@ -45,7 +45,7 @@ public class RecipeController implements RecipeDocs {
         return ResponseEntity.ok(recipeService.getRecipeDetail(id, accessor));
     }
 
-    // @OnlyAdmin
+    @OnlyAdmin
     @DeleteMapping("{id}")
     public ResponseEntity<Long> deleteRecipe(
         @PathVariable(name = "id") final Long id,
@@ -54,7 +54,7 @@ public class RecipeController implements RecipeDocs {
         return ResponseEntity.ok(recipeService.deleteRecipe(id, accessor));
     }
 
-    // @OnlyAdmin
+    @OnlyAdmin
     @PatchMapping("{id}")
     public ResponseEntity<Long> updateRecipe(
         @PathVariable(name = "id") final Long id,
