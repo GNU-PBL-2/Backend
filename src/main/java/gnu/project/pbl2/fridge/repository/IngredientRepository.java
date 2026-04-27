@@ -1,6 +1,6 @@
-package gnu.project.pbl2.Fridge.repository;
+package gnu.project.pbl2.fridge.repository;
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.entity.Ingredient;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.EntityGraph;

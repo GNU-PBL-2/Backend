@@ -1,7 +1,7 @@
 package gnu.project.pbl2.admin.service;
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
-import gnu.project.pbl2.Fridge.repository.IngredientRepository;
+import gnu.project.pbl2.fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.repository.IngredientRepository;
 import gnu.project.pbl2.admin.dto.GeminiRecipeDto;
 import gnu.project.pbl2.common.entity.Category;
 import gnu.project.pbl2.common.entity.Taste;

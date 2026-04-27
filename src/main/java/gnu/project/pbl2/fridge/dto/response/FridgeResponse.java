@@ -1,6 +1,6 @@
-package gnu.project.pbl2.Fridge.dto.response;
+package gnu.project.pbl2.fridge.dto.response;
 
-import gnu.project.pbl2.Fridge.entity.Fridge;
+import gnu.project.pbl2.fridge.entity.Fridge;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 

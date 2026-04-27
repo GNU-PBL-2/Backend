@@ -1,12 +1,12 @@
-package gnu.project.pbl2.Fridge.service;
+package gnu.project.pbl2.fridge.service;
 
-import gnu.project.pbl2.Fridge.dto.request.FridgeCreateRequest;
-import gnu.project.pbl2.Fridge.dto.request.FridgeUpdateRequest;
-import gnu.project.pbl2.Fridge.dto.response.FridgeResponse;
-import gnu.project.pbl2.Fridge.entity.Fridge;
-import gnu.project.pbl2.Fridge.entity.Ingredient;
-import gnu.project.pbl2.Fridge.repository.FridgeRepository;
-import gnu.project.pbl2.Fridge.repository.IngredientRepository;
+import gnu.project.pbl2.fridge.dto.request.FridgeCreateRequest;
+import gnu.project.pbl2.fridge.dto.request.FridgeUpdateRequest;
+import gnu.project.pbl2.fridge.dto.response.FridgeResponse;
+import gnu.project.pbl2.fridge.entity.Fridge;
+import gnu.project.pbl2.fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.repository.FridgeRepository;
+import gnu.project.pbl2.fridge.repository.IngredientRepository;
 import gnu.project.pbl2.user.entity.User;
 import gnu.project.pbl2.user.repository.UserRepository;
 import java.util.List;

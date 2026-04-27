@@ -1,9 +1,9 @@
-package gnu.project.pbl2.Fridge.controller;
+package gnu.project.pbl2.fridge.controller;
 
-import gnu.project.pbl2.Fridge.dto.request.FridgeCreateRequest;
-import gnu.project.pbl2.Fridge.dto.request.FridgeUpdateRequest;
-import gnu.project.pbl2.Fridge.dto.response.FridgeResponse;
-import gnu.project.pbl2.Fridge.service.FridgeService;
+import gnu.project.pbl2.fridge.dto.request.FridgeCreateRequest;
+import gnu.project.pbl2.fridge.dto.request.FridgeUpdateRequest;
+import gnu.project.pbl2.fridge.dto.response.FridgeResponse;
+import gnu.project.pbl2.fridge.service.FridgeService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
