@@ -19,7 +19,7 @@ public record IngredientResponse(
         final List<StorageMethod> storageMethods
     ) {
         return new IngredientResponse(
-            ingredient.getIngredientId(),
+            ingredient.getId(),
             ingredient.getName(),
             ingredient.getCategory().getId(),
             ingredient.getCategory().getName(),

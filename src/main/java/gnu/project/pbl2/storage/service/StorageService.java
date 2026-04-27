@@ -39,29 +39,29 @@ public class StorageService {
 
     /** 재료 전체 조회 */
     public List<IngredientResponse> getIngredients() {
-        final List<Ingredient> ingredients = ingredientRepository.findAllByOrderByIngredientIdAsc();
+        final List<Ingredient> ingredients = ingredientRepository.findAllByOrderByIdAsc();
         final Map<Long, List<StorageMethod>> storageMethodsByIngredient =
             storageMethodRepository.findAllByOrderByStorageIdAsc()
                 .stream()
                 .collect(Collectors.groupingBy(
-                    storageMethod -> storageMethod.getIngredient().getIngredientId()
+                    storageMethod -> storageMethod.getIngredient().getId()
                 ));
 
         return ingredients.stream()
             .map(ingredient -> IngredientResponse.from(
                 ingredient,
-                storageMethodsByIngredient.getOrDefault(ingredient.getIngredientId(), List.of())
+                storageMethodsByIngredient.getOrDefault(ingredient.getId(), List.of())
             ))
             .toList();
     }
 
     /** 재료 단건 조회 */
     public IngredientResponse getIngredient(final Long ingredientId) {
-        final Ingredient ingredient = ingredientRepository.findByIngredientId(ingredientId)
+        final Ingredient ingredient = ingredientRepository.findById(ingredientId)
             .orElseThrow(() -> new BusinessException(ErrorCode.INGREDIENT_NOT_FOUND));
 
         final List<StorageMethod> storageMethods =
-            storageMethodRepository.findAllByIngredient_IngredientIdOrderByStorageIdAsc(ingredientId);
+            storageMethodRepository.findAllByIngredient_IdOrderByStorageIdAsc(ingredientId);
 
         return IngredientResponse.from(ingredient, storageMethods);
     }
@@ -82,7 +82,7 @@ public class StorageService {
         final Long ingredientId,
         final IngredientUpdateRequest request
     ) {
-        final Ingredient ingredient = ingredientRepository.findByIngredientId(ingredientId)
+        final Ingredient ingredient = ingredientRepository.findById(ingredientId)
             .orElseThrow(() -> new BusinessException(ErrorCode.INGREDIENT_NOT_FOUND));
         final Category category = getCategory(request.categoryId());
 
@@ -90,7 +90,7 @@ public class StorageService {
         ingredient.updateCategory(category);
 
         final List<StorageMethod> storageMethods =
-            storageMethodRepository.findAllByIngredient_IngredientIdOrderByStorageIdAsc(ingredientId);
+            storageMethodRepository.findAllByIngredient_IdOrderByStorageIdAsc(ingredientId);
 
         return IngredientResponse.from(ingredient, storageMethods);
     }
@@ -101,11 +101,11 @@ public class StorageService {
         final Ingredient ingredient = ingredientRepository.findById(ingredientId)
             .orElseThrow(() -> new BusinessException(ErrorCode.INGREDIENT_NOT_FOUND));
 
-        if (fridgeRepository.existsByIngredient_IngredientId(ingredientId)) {
+        if (fridgeRepository.existsByIngredient_Id(ingredientId)) {
             throw new IllegalArgumentException("냉장고에 등록된 재료는 삭제할 수 없습니다.");
         }
 
-        storageMethodRepository.deleteAllByIngredient_IngredientId(ingredientId);
+        storageMethodRepository.deleteAllByIngredient_Id(ingredientId);
         ingredientRepository.delete(ingredient);
     }
 
@@ -113,7 +113,7 @@ public class StorageService {
     public List<StorageMethodResponse> getStorageMethods(final Long ingredientId) {
         final List<StorageMethod> storageMethods = ingredientId == null
             ? storageMethodRepository.findAllByOrderByStorageIdAsc()
-            : storageMethodRepository.findAllByIngredient_IngredientIdOrderByStorageIdAsc(ingredientId);
+            : storageMethodRepository.findAllByIngredient_IdOrderByStorageIdAsc(ingredientId);
 
         return storageMethods.stream()
             .map(StorageMethodResponse::from)

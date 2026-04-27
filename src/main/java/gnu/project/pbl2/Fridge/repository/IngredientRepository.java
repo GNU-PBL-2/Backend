@@ -11,9 +11,9 @@ public interface IngredientRepository extends JpaRepository<Ingredient, Long> {
 
     /** 전체 조회 */
     @EntityGraph(attributePaths = "category")
-    List<Ingredient> findAllByOrderByIngredientIdAsc();
+    List<Ingredient> findAllByOrderByIdAsc();
 
-    /** 단건 조회 */
-    @EntityGraph(attributePaths = "category")
-    Optional<Ingredient> findByIngredientId(Long ingredientId);
+    Optional<Ingredient> findByName(String name);
+
+
 }

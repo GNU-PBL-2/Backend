@@ -15,15 +15,15 @@ public interface StorageMethodRepository extends JpaRepository<StorageMethod, Lo
 
     /** 재료별 조회 */
     @EntityGraph(attributePaths = {"ingredient", "ingredient.category"})
-    List<StorageMethod> findAllByIngredient_IngredientIdOrderByStorageIdAsc(Long ingredientId);
+    List<StorageMethod> findAllByIngredient_IdOrderByStorageIdAsc(Long ingredientId);
 
     /** 단건 조회 */
     @EntityGraph(attributePaths = {"ingredient", "ingredient.category"})
     Optional<StorageMethod> findByStorageId(Long storageId);
 
     /** 재료 사용 여부 확인 */
-    boolean existsByIngredient_IngredientId(Long ingredientId);
+    boolean existsByIngredient_Id(Long ingredientId);
 
     /** 재료 기준 일괄 삭제 */
-    void deleteAllByIngredient_IngredientId(Long ingredientId);
+    void deleteAllByIngredient_Id(Long ingredientId);
 }

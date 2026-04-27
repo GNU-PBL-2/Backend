@@ -1,5 +1,6 @@
 package gnu.project.pbl2.Fridge.entity;
 
+
 import gnu.project.pbl2.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -101,3 +102,4 @@ public class Fridge {
         this.expiryDate = expiryDate;
     }
 }
+

@@ -26,7 +26,7 @@ public record FridgeResponse(
     public static FridgeResponse from(final Fridge fridge) {
         return new FridgeResponse(
             fridge.getFridgeId(),
-            fridge.getIngredient().getIngredientId(),
+            fridge.getIngredient().getId(),
             fridge.getIngredient().getName(),
             fridge.getQuantity(),
             fridge.getUnit(),
