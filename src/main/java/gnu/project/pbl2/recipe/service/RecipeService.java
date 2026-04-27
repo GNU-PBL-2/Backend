@@ -1,10 +1,15 @@
 package gnu.project.pbl2.recipe.service;
 
-import static gnu.project.pbl2.fridge.enumerated.FridgeStatus.ENOUGH;
-import static gnu.project.pbl2.fridge.enumerated.FridgeStatus.EXPIRING;
-import static gnu.project.pbl2.fridge.enumerated.FridgeStatus.NONE;
-import static gnu.project.pbl2.recipe.dto.response.RecipeResponseDto.*;
+import static gnu.project.pbl2.Fridge.enumerated.FridgeStatus.ENOUGH;
+import static gnu.project.pbl2.Fridge.enumerated.FridgeStatus.EXPIRING;
+import static gnu.project.pbl2.Fridge.enumerated.FridgeStatus.NONE;
+import static gnu.project.pbl2.recipe.dto.response.RecipeResponseDto.RecipeIngredientDetail;
+import static gnu.project.pbl2.recipe.dto.response.RecipeResponseDto.RecipeStepDetail;
 
+import gnu.project.pbl2.Fridge.entity.Ingredient;
+import gnu.project.pbl2.Fridge.enumerated.FridgeStatus;
+import gnu.project.pbl2.Fridge.repository.FridgeRepository;
+import gnu.project.pbl2.Fridge.repository.IngredientRepository;
 import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.common.entity.Category;
 import gnu.project.pbl2.common.entity.Taste;
@@ -12,10 +17,6 @@ import gnu.project.pbl2.common.error.ErrorCode;
 import gnu.project.pbl2.common.exception.BusinessException;
 import gnu.project.pbl2.common.repository.CategoryRepository;
 import gnu.project.pbl2.common.repository.TasteRepository;
-import gnu.project.pbl2.fridge.enumerated.FridgeStatus;
-import gnu.project.pbl2.fridge.repository.FridgeRepository;
-import gnu.project.pbl2.ingredient.entity.Ingredient;
-import gnu.project.pbl2.ingredient.repository.IngredientRepository;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
 import gnu.project.pbl2.recipe.dto.request.RecipeUpdateRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeResponseDto;

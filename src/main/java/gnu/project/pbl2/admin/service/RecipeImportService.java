@@ -1,5 +1,7 @@
 package gnu.project.pbl2.admin.service;
 
+import gnu.project.pbl2.Fridge.entity.Ingredient;
+import gnu.project.pbl2.Fridge.repository.IngredientRepository;
 import gnu.project.pbl2.admin.dto.GeminiRecipeDto;
 import gnu.project.pbl2.common.entity.Category;
 import gnu.project.pbl2.common.entity.Taste;
@@ -7,8 +9,6 @@ import gnu.project.pbl2.common.error.ErrorCode;
 import gnu.project.pbl2.common.exception.BusinessException;
 import gnu.project.pbl2.common.repository.CategoryRepository;
 import gnu.project.pbl2.common.repository.TasteRepository;
-import gnu.project.pbl2.ingredient.entity.Ingredient;
-import gnu.project.pbl2.ingredient.repository.IngredientRepository;
 import gnu.project.pbl2.recipe.entity.Recipe;
 import gnu.project.pbl2.recipe.entity.RecipeIngredient;
 import gnu.project.pbl2.recipe.entity.RecipeStep;

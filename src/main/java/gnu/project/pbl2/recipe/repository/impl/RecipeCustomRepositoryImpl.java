@@ -2,7 +2,7 @@ package gnu.project.pbl2.recipe.repository.impl;
 
 import static com.querydsl.core.types.dsl.Expressions.asBoolean;
 import static com.querydsl.core.types.dsl.Expressions.asNumber;
-import static gnu.project.pbl2.fridge.entity.QFridge.fridge;
+import static gnu.project.pbl2.Fridge.entity.QFridge.fridge;
 import static gnu.project.pbl2.recipe.entity.QFavorite.favorite;
 import static gnu.project.pbl2.recipe.entity.QRecipe.recipe;
 import static gnu.project.pbl2.recipe.entity.QRecipeIngredient.recipeIngredient;
@@ -309,7 +309,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
                     JPAExpressions
                         .select(fridge.ingredient.id)
                         .from(fridge)
-                        .where(fridge.user.id.eq(userId))
+                        .where(fridge.member.id.eq(userId))
                 )
             )
             .exists()
@@ -388,7 +388,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .select(fridge.ingredient.id)
             .from(fridge)
             .where(
-                fridge.user.id.eq(userId),
+                fridge.member.id.eq(userId),
                 fridge.expiryDate.loe(threshold)
             );
     }

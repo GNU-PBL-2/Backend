@@ -34,9 +34,9 @@ public enum ErrorCode {
     RECIPE_NOT_FOUND(HttpStatus.NOT_FOUND,"RECIPE6001" ,"해당 레시피를 찾을 수 없습니다" ),
     RECIPE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST,"RECIPE6002" ,"해당 레시피가 이미 존재합니다." ),
     RECIPE_IMPORT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "RECIPE6003", "레시피 분석에 실패했습니다."),
-
-
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND,"CATEGORY6001" ,"해당 카테고리를 찾을 수 없습니다"),
+    INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "STORAGE4041", "해당 재료를 찾을 수 없습니다."),
+    STORAGE_METHOD_NOT_FOUND(HttpStatus.NOT_FOUND, "STORAGE4042", "해당 보관 방법을 찾을 수 없습니다."),
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "STORAGE4043", "해당 카테고리를 찾을 수 없습니다."),
 
     TASTE_NOT_FOUND(HttpStatus.NOT_FOUND,"TASTE7001", "해당 맛을 찾을 수 없습니다");
     private final HttpStatus status;

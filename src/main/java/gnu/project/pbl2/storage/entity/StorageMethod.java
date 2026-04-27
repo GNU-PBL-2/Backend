@@ -1,6 +1,6 @@
-package gnu.project.pbl2.common.entity;
+package gnu.project.pbl2.storage.entity;
 
-import gnu.project.pbl2.ingredient.entity.Ingredient;
+import gnu.project.pbl2.Fridge.entity.Ingredient;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -45,15 +45,42 @@ public class StorageMethod {
     @Column(name = "tip", columnDefinition = "TEXT")
     private String tip;
 
-    public StorageMethod(
-            Ingredient ingredient,
-            String storageType,
-            BigDecimal minTemp,
-            BigDecimal maxTemp,
-            Integer durationDays,
-            String tip
+    private StorageMethod(
+        final Ingredient ingredient,
+        final String storageType,
+        final BigDecimal minTemp,
+        final BigDecimal maxTemp,
+        final Integer durationDays,
+        final String tip
     ) {
         this.ingredient = ingredient;
+        this.storageType = storageType;
+        this.minTemp = minTemp;
+        this.maxTemp = maxTemp;
+        this.durationDays = durationDays;
+        this.tip = tip;
+    }
+
+    /** 보관 방법 생성 */
+    public static StorageMethod create(
+        final Ingredient ingredient,
+        final String storageType,
+        final BigDecimal minTemp,
+        final BigDecimal maxTemp,
+        final Integer durationDays,
+        final String tip
+    ) {
+        return new StorageMethod(ingredient, storageType, minTemp, maxTemp, durationDays, tip);
+    }
+
+    /** 보관 방법 수정 */
+    public void update(
+        final String storageType,
+        final BigDecimal minTemp,
+        final BigDecimal maxTemp,
+        final Integer durationDays,
+        final String tip
+    ) {
         this.storageType = storageType;
         this.minTemp = minTemp;
         this.maxTemp = maxTemp;

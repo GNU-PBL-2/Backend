@@ -13,13 +13,13 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column()
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    public Category(String name) {
+    public Category(final String name) {
         this.name = name;
     }
 }
