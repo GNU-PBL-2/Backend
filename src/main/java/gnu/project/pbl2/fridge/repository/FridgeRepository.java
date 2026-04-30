@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 public interface FridgeRepository extends JpaRepository<Fridge, Long> {
 
@@ -23,4 +24,8 @@ public interface FridgeRepository extends JpaRepository<Fridge, Long> {
 
     /** 재료 사용 여부 확인 */
     boolean existsByIngredient_Id(Long ingredientId);
+
+    @EntityGraph(attributePaths = {"member", "ingredient"})
+    @Query("SELECT f FROM Fridge f WHERE f.expiryDate IS NOT NULL AND f.expiryDate <= :threshold")
+    List<Fridge> findAllExpiringFridgeItems(@Param("threshold") LocalDate threshold);
 }
