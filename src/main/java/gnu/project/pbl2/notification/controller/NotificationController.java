@@ -1,6 +1,7 @@
 package gnu.project.pbl2.notification.controller;
 
 import gnu.project.pbl2.auth.aop.Auth;
+import gnu.project.pbl2.auth.aop.OnlyUser;
 import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.notification.controller.docs.NotificationControllerDocs;
 import gnu.project.pbl2.notification.dto.response.NotificationResponse;
@@ -23,16 +24,19 @@ public class NotificationController implements NotificationControllerDocs {
 
     private final NotificationService notificationService;
 
+    @OnlyUser
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@Auth Accessor accessor) {
         return notificationService.subscribe(accessor.getUserId());
     }
 
+    @OnlyUser
     @GetMapping
     public ResponseEntity<List<NotificationResponse>> getNotifications(@Auth Accessor accessor) {
         return ResponseEntity.ok(notificationService.getNotifications(accessor.getUserId()));
     }
 
+    @OnlyUser
     @PatchMapping("/{notificationId}/read")
     public ResponseEntity<Void> markAsRead(
         @PathVariable Long notificationId,

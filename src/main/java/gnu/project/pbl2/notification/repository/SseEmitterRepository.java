@@ -12,7 +12,10 @@ public class SseEmitterRepository {
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
 
     public void save(Long userId, SseEmitter emitter) {
-        emitters.put(userId, emitter);
+        SseEmitter old = emitters.put(userId, emitter);
+        if (old != null) {
+            old.complete();
+        }
     }
 
     public Optional<SseEmitter> findById(Long userId) {
