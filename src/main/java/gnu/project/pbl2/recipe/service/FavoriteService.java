@@ -14,6 +14,7 @@ import gnu.project.pbl2.recipe.repository.RecipeRepository;
 import gnu.project.pbl2.user.entity.User;
 import gnu.project.pbl2.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,17 +32,17 @@ public class FavoriteService {
     public void add(final Long recipeId, final Accessor accessor) {
         final Long userId = accessor.getUserId();
 
-        if (favoriteRepository.findByUser_IdAndRecipe_Id(userId, recipeId).isPresent()) {
-            throw new BusinessException(ErrorCode.FAVORITE_ALREADY_EXISTS);
-        }
-
         final Recipe recipe = recipeRepository.findById(recipeId)
             .orElseThrow(() -> new BusinessException(ErrorCode.RECIPE_NOT_FOUND));
 
         final User user = userRepository.findActiveById(userId)
             .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
-        favoriteRepository.save(Favorite.of(user, recipe));
+        try {
+            favoriteRepository.saveAndFlush(Favorite.of(user, recipe));
+        } catch (DataIntegrityViolationException e) {
+            throw new BusinessException(ErrorCode.FAVORITE_ALREADY_EXISTS);
+        }
     }
 
     @Transactional
