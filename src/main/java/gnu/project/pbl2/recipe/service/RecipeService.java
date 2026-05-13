@@ -16,8 +16,11 @@ import gnu.project.pbl2.common.entity.Taste;
 import gnu.project.pbl2.common.error.ErrorCode;
 import gnu.project.pbl2.common.exception.BusinessException;
 import gnu.project.pbl2.common.repository.CategoryRepository;
+import gnu.project.pbl2.common.repository.IngredientAllergyRepository;
 import gnu.project.pbl2.common.repository.TasteRepository;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
+import gnu.project.pbl2.user.dto.UserPreference;
+import gnu.project.pbl2.user.repository.UserRepository;
 import gnu.project.pbl2.recipe.dto.request.RecipeUpdateRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeResponseDto;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
@@ -51,6 +54,8 @@ public class RecipeService {
     private final IngredientRepository ingredientRepository;
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeStepRepository recipeStepRepository;
+    private final UserRepository userRepository;
+    private final IngredientAllergyRepository ingredientAllergyRepository;
 
     @Transactional(readOnly = true)
     public Page<RecipeSearchResponse> getRecipes(
@@ -58,8 +63,9 @@ public class RecipeService {
         final Accessor accessor
     ) {
         Long userId = accessor.getUserId();
+        UserPreference preference = loadUserPreference(userId);
 
-        Page<RecipeSearchResponse> page = recipeRepository.searchRecipes(request, userId);
+        Page<RecipeSearchResponse> page = recipeRepository.searchRecipes(request, userId, preference);
         List<Long> recipeIds = page.getContent().stream()
             .map(RecipeSearchResponse::id)
             .toList();
@@ -136,6 +142,19 @@ public class RecipeService {
             ingredients,
             steps
         );
+    }
+
+    private UserPreference loadUserPreference(Long userId) {
+        if (userId == null) {
+            return UserPreference.empty();
+        }
+        List<Long> categoryIds = userRepository.findCategoryIdsByUserId(userId);
+        List<Long> tasteIds = userRepository.findTasteIdsByUserId(userId);
+        List<Long> allergyIds = userRepository.findAllergyIdsByUserId(userId);
+        List<Long> allergenIngredientIds = allergyIds.isEmpty()
+            ? List.of()
+            : ingredientAllergyRepository.findIngredientIdsByAllergyIds(allergyIds);
+        return new UserPreference(categoryIds, tasteIds, allergenIngredientIds);
     }
 
     private FridgeStatus getFridgeStatus(

@@ -10,7 +10,6 @@ import gnu.project.pbl2.notification.repository.NotificationRepository;
 import gnu.project.pbl2.notification.repository.SseEmitterRepository;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -59,20 +58,17 @@ public class NotificationService {
     @Scheduled(cron = "0 0 9 * * *")
     public void checkAndSendExpiryNotifications() {
         LocalDate threshold = LocalDate.now().plusDays(EXPIRY_THRESHOLD_DAYS);
-        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
-        LocalDateTime endOfDay = startOfDay.plusDays(1);
 
         fridgeRepository.findAllExpiringFridgeItems(threshold).forEach(fridge -> {
             Long userId = fridge.getMember().getId();
             String ingredientName = fridge.getIngredient().getName();
+            LocalDate expiryDate = fridge.getExpiryDate();
 
-            if (notificationRepository.existsTodayNotification(userId, ingredientName, startOfDay, endOfDay)) {
+            if (notificationRepository.existsByUserAndIngredientAndExpiryDate(userId, ingredientName, expiryDate)) {
                 return;
             }
 
-            Notification notification = Notification.create(
-                fridge.getMember(), ingredientName, fridge.getExpiryDate()
-            );
+            Notification notification = Notification.create(fridge.getMember(), ingredientName, expiryDate);
             notificationRepository.save(notification);
 
             sseEmitterRepository.findById(userId).ifPresent(emitter ->
