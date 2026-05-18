@@ -28,7 +28,11 @@ public enum ErrorCode {
 
     INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "STORAGE4041", "해당 재료를 찾을 수 없습니다."),
     STORAGE_METHOD_NOT_FOUND(HttpStatus.NOT_FOUND, "STORAGE4042", "해당 보관 방법을 찾을 수 없습니다."),
-    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "STORAGE4043", "해당 카테고리를 찾을 수 없습니다.");
+    CATEGORY_NOT_FOUND(HttpStatus.NOT_FOUND, "STORAGE4043", "해당 카테고리를 찾을 수 없습니다."),
+
+    FRIDGE_NOT_FOUND(HttpStatus.NOT_FOUND, "FRIDGE4041", "해당 냉장고 재료를 찾을 수 없습니다."),
+
+    RECIPE_INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND, "RECIPE4042", "해당 레시피 재료를 찾을 수 없습니다.");
 
     /** HTTP 상태 */
     private final HttpStatus status;

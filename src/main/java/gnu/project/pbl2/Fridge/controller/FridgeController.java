@@ -4,6 +4,7 @@ import gnu.project.pbl2.Fridge.dto.request.FridgeCreateRequest;
 import gnu.project.pbl2.Fridge.dto.request.FridgeUpdateRequest;
 import gnu.project.pbl2.Fridge.dto.response.FridgeResponse;
 import gnu.project.pbl2.Fridge.service.FridgeService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,13 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequiredArgsConstructor
-@RequestMapping("/api/v1/fridge")
 /**
  * 냉장고 재료 관련 HTTP 요청을 받는 컨트롤러.
  * 클라이언트 요청을 서비스 계층으로 전달하고 결과를 HTTP 응답으로 반환한다.
  */
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/api/v1/fridge")
 public class FridgeController {
 
     // 냉장고 재료 조회/등록/수정/삭제 비즈니스 로직을 담당하는 서비스
@@ -38,7 +39,7 @@ public class FridgeController {
     // 냉장고에 새로운 재료를 추가한다.
     @PostMapping
     public ResponseEntity<FridgeResponse> addIngredient(
-        @RequestBody final FridgeCreateRequest request
+        @Valid @RequestBody final FridgeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(fridgeService.addIngredient(request));
@@ -48,7 +49,7 @@ public class FridgeController {
     @PatchMapping("/{fridgeId}")
     public ResponseEntity<FridgeResponse> updateIngredient(
         @PathVariable final Long fridgeId,
-        @RequestBody final FridgeUpdateRequest request
+        @Valid @RequestBody final FridgeUpdateRequest request
     ) {
         return ResponseEntity.ok(fridgeService.updateIngredient(fridgeId, request));
     }
