@@ -25,11 +25,11 @@ import gnu.project.pbl2.recipe.dto.request.RecipeUpdateRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeResponseDto;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
 import gnu.project.pbl2.recipe.entity.Recipe;
-import gnu.project.pbl2.recipe.entity.RecipeIngredient;
 import gnu.project.pbl2.recipe.entity.RecipeStep;
-import gnu.project.pbl2.recipe.repository.RecipeIngredientRepository;
 import gnu.project.pbl2.recipe.repository.RecipeRepository;
 import gnu.project.pbl2.recipe.repository.RecipeStepRepository;
+import gnu.project.pbl2.recipeingredient.entity.RecipeIngredient;
+import gnu.project.pbl2.recipeingredient.repository.RecipeIngredientRepository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -107,13 +107,13 @@ public class RecipeService {
             .findExpiringIngredientIds(userId, LocalDate.now().plusDays(3));
 
         List<RecipeIngredientDetail> ingredients =
-            foundRecipe.getIngredients().stream()
+            recipeIngredientRepository.findAllById_RecipeIdOrderById_IngredientIdAsc(recipeId).stream()
                 .map(ri -> new RecipeIngredientDetail(
                     ri.getIngredient().getId(),
                     ri.getIngredient().getName(),
                     ri.getAmount(),
                     ri.getUnit(),
-                    ri.isSubstitutable(),
+                    ri.getIsSubstitutable(),
                     getFridgeStatus(
                         ri.getIngredient().getId(),
                         myIngredientIds,
@@ -201,16 +201,19 @@ public class RecipeService {
             request.description()
         );
 
+        recipeIngredientRepository.deleteAll(
+            recipeIngredientRepository.findAllById_RecipeIdOrderById_IngredientIdAsc(id));
+
         recipe.clearCollections();
 
-        List<RecipeIngredient> newIngredients = request.ingredients().stream()
+        request.ingredients().stream()
             .map(ingDto -> {
                 Ingredient ingredient = ingredientRepository.findByName(ingDto.name())
                     .orElseGet(() -> ingredientRepository.save(
                         Ingredient.create(ingDto.name(), category)));
                 return recipeIngredientRepository.save(
-                    RecipeIngredient.of(recipe, ingredient, ingDto.amount(), ingDto.unit(),
-                        ingDto.isSubstitutable()));
+                    RecipeIngredient.create(id, ingredient, ingDto.amount(),
+                        ingDto.unit(), ingDto.isSubstitutable()));
             })
             .toList();
 
@@ -221,7 +224,6 @@ public class RecipeService {
                 recipeStepRepository.save(RecipeStep.of(recipe, i + 1, request.steps().get(i))));
         }
 
-        recipe.addIngredients(newIngredients);
         recipe.addSteps(newSteps);
 
         return recipe.getId();

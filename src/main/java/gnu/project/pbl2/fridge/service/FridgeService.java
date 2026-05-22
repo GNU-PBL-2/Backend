@@ -1,5 +1,7 @@
 package gnu.project.pbl2.fridge.service;
 
+import gnu.project.pbl2.common.error.ErrorCode;
+import gnu.project.pbl2.common.exception.BusinessException;
 import gnu.project.pbl2.fridge.dto.request.FridgeCreateRequest;
 import gnu.project.pbl2.fridge.dto.request.FridgeUpdateRequest;
 import gnu.project.pbl2.fridge.dto.response.FridgeResponse;
@@ -58,18 +60,24 @@ public class FridgeService {
         return FridgeResponse.from(fridgeRepository.save(fridge));
     }
 
-    @Transactional
     // 냉장고 재료를 조회한 뒤 수량, 단위, 유통기한을 변경한다.
+    @Transactional
     public FridgeResponse updateIngredient(
         final Long fridgeId,
         final FridgeUpdateRequest request
     ) {
         final Fridge fridge = fridgeRepository.findById(fridgeId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 냉장고 재료입니다."));
+            .orElseThrow(() -> new BusinessException(ErrorCode.FRIDGE_NOT_FOUND));
 
-        fridge.updateQuantity(request.quantity());
-        fridge.updateUnit(request.unit());
-        fridge.updateExpiryDate(request.expiryDate());
+        if (request.quantity() != null) {
+            fridge.updateQuantity(request.quantity());
+        }
+        if (request.unit() != null) {
+            fridge.updateUnit(request.unit());
+        }
+        if (request.expiryDate() != null) {
+            fridge.updateExpiryDate(request.expiryDate());
+        }
 
         return FridgeResponse.from(fridge);
     }
@@ -78,7 +86,7 @@ public class FridgeService {
     // 냉장고 재료를 조회한 뒤 삭제한다.
     public void deleteIngredient(final Long fridgeId) {
         final Fridge fridge = fridgeRepository.findById(fridgeId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 냉장고 재료입니다."));
+            .orElseThrow(() -> new BusinessException(ErrorCode.FRIDGE_NOT_FOUND));
 
         fridgeRepository.delete(fridge);
     }

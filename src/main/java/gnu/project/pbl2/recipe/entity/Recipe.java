@@ -58,10 +58,8 @@ public class Recipe extends BaseEntity {
     private Set<RecipeStep> steps = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<RecipeIngredient> ingredients = new LinkedHashSet<>();
-
-    @OneToMany(mappedBy = "recipe", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
+
     public static Recipe create(
         String title,
         Category category,
@@ -80,8 +78,6 @@ public class Recipe extends BaseEntity {
         return recipe;
     }
 
-
-    // 수정 로직 (정적 메서드가 아닌 인스턴스 메서드)
     public void update(
         String title,
         Category category,
@@ -96,14 +92,8 @@ public class Recipe extends BaseEntity {
         this.description = description;
     }
 
-    // 기존 재료와 단계를 초기화하는 메서드
     public void clearCollections() {
-        this.ingredients.clear();
         this.steps.clear();
-    }
-
-    public void addIngredients(List<RecipeIngredient> recipeIngredients) {
-        this.ingredients.addAll(recipeIngredients);
     }
 
     public void addSteps(List<RecipeStep> recipeSteps) {

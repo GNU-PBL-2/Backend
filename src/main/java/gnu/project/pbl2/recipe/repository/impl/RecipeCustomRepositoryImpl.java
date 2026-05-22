@@ -5,7 +5,7 @@ import static com.querydsl.core.types.dsl.Expressions.asNumber;
 import static gnu.project.pbl2.fridge.entity.QFridge.fridge;
 import static gnu.project.pbl2.recipe.entity.QFavorite.favorite;
 import static gnu.project.pbl2.recipe.entity.QRecipe.recipe;
-import static gnu.project.pbl2.recipe.entity.QRecipeIngredient.recipeIngredient;
+import static gnu.project.pbl2.recipeingredient.entity.QRecipeIngredient.recipeIngredient;
 import static gnu.project.pbl2.recipe.entity.QRecipeStep.recipeStep;
 
 import com.querydsl.core.BooleanBuilder;
@@ -201,17 +201,17 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
     public java.util.Map<Long, Long> findExpiringCountMap(List<Long> recipeIds, Long userId) {
         LocalDate threshold = LocalDate.now().plusDays(3);
         return queryFactory
-            .select(recipeIngredient.recipe.id, recipeIngredient.count())
+            .select(recipeIngredient.id.recipeId, recipeIngredient.count())
             .from(recipeIngredient)
             .where(
-                recipeIngredient.recipe.id.in(recipeIds),
+                recipeIngredient.id.recipeId.in(recipeIds),
                 recipeIngredient.ingredient.id.in(expiringIngredientIds(userId, threshold))
             )
-            .groupBy(recipeIngredient.recipe.id)
+            .groupBy(recipeIngredient.id.recipeId)
             .fetch()
             .stream()
             .collect(java.util.stream.Collectors.toMap(
-                t -> t.get(recipeIngredient.recipe.id),
+                t -> t.get(recipeIngredient.id.recipeId),
                 t -> t.get(recipeIngredient.count())
             ));
     }
@@ -251,8 +251,6 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .selectFrom(recipe)
             .leftJoin(recipe.category).fetchJoin()
             .leftJoin(recipe.taste).fetchJoin()
-            .leftJoin(recipe.ingredients, recipeIngredient).fetchJoin()
-            .leftJoin(recipeIngredient.ingredient).fetchJoin()
             .where(recipe.id.eq(recipeId),recipe.isDeleted.eq(false))
             .fetchOne();
 
@@ -303,7 +301,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .selectOne()
             .from(recipeIngredient)
             .where(
-                recipeIngredient.recipe.eq(recipe),
+                recipeIngredient.id.recipeId.eq(recipe.id),
                 recipeIngredient.isSubstitutable.isFalse(),
                 recipeIngredient.ingredient.id.notIn(
                     JPAExpressions
@@ -330,7 +328,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .selectOne()
             .from(recipeIngredient)
             .where(
-                recipeIngredient.recipe.eq(recipe),
+                recipeIngredient.id.recipeId.eq(recipe.id),
                 recipeIngredient.ingredient.id.in(expiringIngredientIds(userId, threshold))
             )
             .exists();
@@ -369,7 +367,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .select(recipeIngredient.count())
             .from(recipeIngredient)
             .where(
-                recipeIngredient.recipe.eq(recipe),
+                recipeIngredient.id.recipeId.eq(recipe.id),
                 recipeIngredient.ingredient.id.in(expiringIngredientIds(userId, threshold))
             );
     }
@@ -432,7 +430,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
             .selectOne()
             .from(recipeIngredient)
             .where(
-                recipeIngredient.recipe.eq(recipe),
+                recipeIngredient.id.recipeId.eq(recipe.id),
                 recipeIngredient.ingredient.id.in(ingredientIds)
             )
             .exists()

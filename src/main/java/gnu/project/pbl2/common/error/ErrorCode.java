@@ -43,7 +43,9 @@ public enum ErrorCode {
     TASTE_NOT_FOUND(HttpStatus.NOT_FOUND,"TASTE7001", "해당 맛을 찾을 수 없습니다"),
 
     // notification
-    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI8001", "해당 알림을 찾을 수 없습니다.");
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "NOTI8001", "해당 알림을 찾을 수 없습니다."),
+    FRIDGE_NOT_FOUND(HttpStatus.NOT_FOUND,"FRIDGE9001" ,"냉장고를 찾을 수 없습니다" ),
+    RECIPE_INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND,"RECIPE_INGREDENT1001" ,"레시피 재료를 찾을 수 없습니다");
     private final HttpStatus status;
     private final String code;
     private final String message;

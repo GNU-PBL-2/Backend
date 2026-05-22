@@ -16,7 +16,7 @@ public record FridgeResponse(
     String ingredientName,
     // 보유 수량
     BigDecimal quantity,
-    // 수량 단위
+    // 수량 표현 단위 (적음, 중간, 많음 또는 사용자 직접 입력값)
     String unit,
     // 유통기한
     LocalDate expiryDate

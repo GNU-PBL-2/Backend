@@ -18,14 +18,14 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity
-@Table(name = "fridge")
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 /**
  * 회원 냉장고에 들어 있는 재료 한 건을 나타내는 엔티티.
  * 어떤 회원이 어떤 재료를 얼마만큼 보유하는지와 유통기한을 저장한다.
  */
+@Entity
+@Table(name = "fridge")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Fridge {
 
     // 냉장고 재료 레코드 PK
@@ -48,7 +48,7 @@ public class Fridge {
     @Column(name = "quantity", nullable = false, precision = 10, scale = 2)
     private BigDecimal quantity;
 
-    // 수량 단위
+    // 수량 표현 단위 (적음, 중간, 많음 또는 사용자 직접 입력값)
     @Column(name = "unit", nullable = false, length = 20)
     private String unit;
 
@@ -92,7 +92,7 @@ public class Fridge {
         this.quantity = quantity;
     }
 
-    // 재료 단위를 변경한다.
+    // 재료 수량 표현 단위를 변경한다.
     public void updateUnit(final String unit) {
         this.unit = unit;
     }

@@ -4,6 +4,7 @@ import gnu.project.pbl2.fridge.dto.request.FridgeCreateRequest;
 import gnu.project.pbl2.fridge.dto.request.FridgeUpdateRequest;
 import gnu.project.pbl2.fridge.dto.response.FridgeResponse;
 import gnu.project.pbl2.fridge.service.FridgeService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,7 +39,7 @@ public class FridgeController {
     // 냉장고에 새로운 재료를 추가한다.
     @PostMapping
     public ResponseEntity<FridgeResponse> addIngredient(
-        @RequestBody final FridgeCreateRequest request
+        @Valid @RequestBody final FridgeCreateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
             .body(fridgeService.addIngredient(request));
@@ -48,7 +49,7 @@ public class FridgeController {
     @PatchMapping("/{fridgeId}")
     public ResponseEntity<FridgeResponse> updateIngredient(
         @PathVariable final Long fridgeId,
-        @RequestBody final FridgeUpdateRequest request
+        @Valid @RequestBody final FridgeUpdateRequest request
     ) {
         return ResponseEntity.ok(fridgeService.updateIngredient(fridgeId, request));
     }
