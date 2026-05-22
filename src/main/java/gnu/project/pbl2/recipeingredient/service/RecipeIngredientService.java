@@ -1,9 +1,9 @@
 package gnu.project.pbl2.recipeingredient.service;
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
-import gnu.project.pbl2.Fridge.repository.IngredientRepository;
 import gnu.project.pbl2.common.error.ErrorCode;
 import gnu.project.pbl2.common.exception.BusinessException;
+import gnu.project.pbl2.fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.repository.IngredientRepository;
 import gnu.project.pbl2.recipeingredient.dto.request.RecipeIngredientCreateRequest;
 import gnu.project.pbl2.recipeingredient.dto.request.RecipeIngredientUpdateRequest;
 import gnu.project.pbl2.recipeingredient.dto.response.RecipeIngredientResponse;

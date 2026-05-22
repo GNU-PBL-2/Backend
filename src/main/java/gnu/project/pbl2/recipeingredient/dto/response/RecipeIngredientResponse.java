@@ -1,14 +1,13 @@
 package gnu.project.pbl2.recipeingredient.dto.response;
 
 import gnu.project.pbl2.recipeingredient.entity.RecipeIngredient;
-import java.math.BigDecimal;
 
 /** 레시피 재료 응답 */
 public record RecipeIngredientResponse(
     Long recipeId,
     Long ingredientId,
     String ingredientName,
-    BigDecimal amount,
+    String amount,
     String unit,
     Boolean isSubstitutable
 ) {

@@ -1,6 +1,6 @@
 package gnu.project.pbl2.recipeingredient.entity;
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.entity.Ingredient;
 import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
@@ -9,7 +9,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,8 +31,8 @@ public class RecipeIngredient {
     private Ingredient ingredient;
 
     /** 재료 양 */
-    @Column(name = "amount", nullable = false, precision = 10, scale = 2)
-    private BigDecimal amount;
+    @Column(name = "amount", nullable = false, length = 50)
+    private String amount;
 
     /** 단위 */
     @Column(name = "unit", nullable = false, length = 20)
@@ -46,11 +45,11 @@ public class RecipeIngredient {
     private RecipeIngredient(
         final Long recipeId,
         final Ingredient ingredient,
-        final BigDecimal amount,
+        final String amount,
         final String unit,
         final Boolean isSubstitutable
     ) {
-        this.id = new RecipeIngredientId(recipeId, ingredient.getIngredientId());
+        this.id = new RecipeIngredientId(recipeId, ingredient.getId());
         this.ingredient = ingredient;
         this.amount = amount;
         this.unit = unit;
@@ -61,7 +60,7 @@ public class RecipeIngredient {
     public static RecipeIngredient create(
         final Long recipeId,
         final Ingredient ingredient,
-        final BigDecimal amount,
+        final String amount,
         final String unit,
         final Boolean isSubstitutable
     ) {
@@ -80,7 +79,7 @@ public class RecipeIngredient {
 
     /** 레시피 재료 수정 */
     public void update(
-        final BigDecimal amount,
+        final String amount,
         final String unit,
         final Boolean isSubstitutable
     ) {

@@ -10,11 +10,11 @@ import gnu.project.pbl2.common.exception.BusinessException;
 import gnu.project.pbl2.common.repository.CategoryRepository;
 import gnu.project.pbl2.common.repository.TasteRepository;
 import gnu.project.pbl2.recipe.entity.Recipe;
-import gnu.project.pbl2.recipe.entity.RecipeIngredient;
 import gnu.project.pbl2.recipe.entity.RecipeStep;
-import gnu.project.pbl2.recipe.repository.RecipeIngredientRepository;
 import gnu.project.pbl2.recipe.repository.RecipeRepository;
 import gnu.project.pbl2.recipe.repository.RecipeStepRepository;
+import gnu.project.pbl2.recipeingredient.entity.RecipeIngredient;
+import gnu.project.pbl2.recipeingredient.repository.RecipeIngredientRepository;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -60,25 +60,22 @@ public class RecipeImportService {
             )
         );
 
-        List<RecipeIngredient> recipeIngredients = dto.ingredients().stream()
-            .map(ing -> {
-                Ingredient ingredient = ingredientRepository.findByName(ing.name())
-                    .orElseGet(() -> {
-                        log.info("새 재료 생성: {}", ing.name());
-                        return ingredientRepository.save(Ingredient.create(ing.name(), category));
-                    });
-                return recipeIngredientRepository.save(
-                    RecipeIngredient.of(recipe, ingredient, ing.amount(), ing.unit(),
-                        ing.isSubstitutable()));
-            })
-            .toList();
+        dto.ingredients().forEach(ing -> {
+            Ingredient ingredient = ingredientRepository.findByName(ing.name())
+                .orElseGet(() -> {
+                    log.info("새 재료 생성: {}", ing.name());
+                    return ingredientRepository.save(Ingredient.create(ing.name(), category));
+                });
+            recipeIngredientRepository.save(
+                RecipeIngredient.create(recipe.getId(), ingredient,
+                    ing.amount(), ing.unit(), ing.isSubstitutable()));
+        });
 
         List<RecipeStep> steps = new ArrayList<>();
         for (int i = 0; i < dto.steps().size(); i++) {
             steps.add(recipeStepRepository.save(RecipeStep.of(recipe, i + 1, dto.steps().get(i))));
         }
 
-        recipe.addIngredients(recipeIngredients);
         recipe.addSteps(steps);
 
         return recipe.getId();
