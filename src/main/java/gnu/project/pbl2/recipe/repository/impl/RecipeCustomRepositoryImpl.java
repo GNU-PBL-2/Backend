@@ -8,8 +8,10 @@ import static gnu.project.pbl2.recipe.entity.QRecipe.recipe;
 import static gnu.project.pbl2.recipe.entity.QRecipeIngredient.recipeIngredient;
 import static gnu.project.pbl2.recipe.entity.QRecipeStep.recipeStep;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.Predicate;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -19,6 +21,7 @@ import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
 import gnu.project.pbl2.recipe.entity.Recipe;
 import gnu.project.pbl2.recipe.repository.RecipeCustomRepository;
+import gnu.project.pbl2.user.dto.UserPreference;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -46,12 +49,12 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
      * @author Hong
      */
     @Override
-    public Page<RecipeSearchResponse> searchRecipes(RecipeSearchRequest request, Long userId) {
+    public Page<RecipeSearchResponse> searchRecipes(RecipeSearchRequest request, Long userId, UserPreference preference) {
         return switch (request.tab()) {
-            case ALL -> searchAll(request);
-            case COOKABLE -> searchCookable(request, userId);
-            case EXPIRING -> searchExpiring(request, userId);
-            case FAVORITE -> searchFavorite(request, userId);
+            case ALL -> searchAll(request, preference);
+            case COOKABLE -> searchCookable(request, userId, preference);
+            case EXPIRING -> searchExpiring(request, userId, preference);
+            case FAVORITE -> searchFavorite(request, userId, preference);
         };
     }
 
@@ -63,9 +66,9 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
      * @param request 검색 조건
      * @return 전체 레시피 목록 페이지
      */
-    private Page<RecipeSearchResponse> searchAll(RecipeSearchRequest request) {
+    private Page<RecipeSearchResponse> searchAll(RecipeSearchRequest request, UserPreference preference) {
         return fetchPage(request,
-            keywordContains(request.keyword()),
+            buildCondition(keywordContains(request.keyword()), preference),
             recipe.createdAt.desc()
         );
     }
@@ -79,10 +82,9 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
      * @param userId  사용자 ID
      * @return 조리 가능한 레시피 목록 페이지
      */
-    private Page<RecipeSearchResponse> searchCookable(RecipeSearchRequest request,
-        Long userId) {
+    private Page<RecipeSearchResponse> searchCookable(RecipeSearchRequest request, Long userId, UserPreference preference) {
         return fetchPage(request,
-            noMissingIngredient(userId).and(keywordContains(request.keyword())),
+            buildCondition(noMissingIngredient(userId).and(keywordContains(request.keyword())), preference),
             recipe.createdAt.desc()
         );
     }
@@ -97,11 +99,10 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
      * @return 임박 재료 기반 레시피 목록 페이지
      */
 
-    private Page<RecipeSearchResponse> searchExpiring(RecipeSearchRequest request,
-        Long userId) {
+    private Page<RecipeSearchResponse> searchExpiring(RecipeSearchRequest request, Long userId, UserPreference preference) {
         LocalDate threshold = LocalDate.now().plusDays(3);
         return fetchPage(request,
-            hasExpiringIngredient(userId, threshold).and(keywordContains(request.keyword())),
+            buildCondition(hasExpiringIngredient(userId, threshold).and(keywordContains(request.keyword())), preference),
             new OrderSpecifier<>(Order.DESC, expiringIngredientCount(userId, threshold)),
             recipe.createdAt.desc()
         );
@@ -116,10 +117,9 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
      * @param userId  사용자 ID
      * @return 즐겨찾기 레시피 목록 페이지
      */
-    private Page<RecipeSearchResponse> searchFavorite(RecipeSearchRequest request,
-        Long userId) {
+    private Page<RecipeSearchResponse> searchFavorite(RecipeSearchRequest request, Long userId, UserPreference preference) {
         return fetchPage(request,
-            isFavorited(userId).and(keywordContains(request.keyword())),
+            buildCondition(isFavorited(userId).and(keywordContains(request.keyword())), preference),
             recipe.createdAt.desc()
         );
     }
@@ -136,7 +136,7 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
      */
     private Page<RecipeSearchResponse> fetchPage(
         RecipeSearchRequest request,
-        BooleanExpression condition,
+        Predicate condition,
         OrderSpecifier<?>... orders
     ) {
         List<RecipeSearchResponse> content = queryFactory
@@ -406,5 +406,36 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
         return StringUtils.hasText(keyword)
             ? recipe.title.containsIgnoreCase(keyword)
             : null;
+    }
+
+    private Predicate buildCondition(Predicate base, UserPreference preference) {
+        BooleanBuilder builder = new BooleanBuilder(base);
+        builder.and(filterByCategories(preference.categoryIds()));
+        builder.and(filterByTastes(preference.tasteIds()));
+        builder.and(excludeAllergenIngredients(preference.allergenIngredientIds()));
+        return builder;
+    }
+
+    private BooleanExpression filterByCategories(List<Long> categoryIds) {
+        return categoryIds.isEmpty() ? null : recipe.category.id.in(categoryIds);
+    }
+
+    private BooleanExpression filterByTastes(List<Long> tasteIds) {
+        return tasteIds.isEmpty() ? null : recipe.taste.id.in(tasteIds);
+    }
+
+    private BooleanExpression excludeAllergenIngredients(List<Long> ingredientIds) {
+        if (ingredientIds.isEmpty()) {
+            return null;
+        }
+        return JPAExpressions
+            .selectOne()
+            .from(recipeIngredient)
+            .where(
+                recipeIngredient.recipe.eq(recipe),
+                recipeIngredient.ingredient.id.in(ingredientIds)
+            )
+            .exists()
+            .not();
     }
 }

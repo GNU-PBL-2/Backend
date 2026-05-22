@@ -3,6 +3,7 @@ package gnu.project.pbl2.recipe.repository;
 import gnu.project.pbl2.recipe.dto.request.RecipeSearchRequest;
 import gnu.project.pbl2.recipe.dto.response.RecipeSearchResponse;
 import gnu.project.pbl2.recipe.entity.Recipe;
+import gnu.project.pbl2.user.dto.UserPreference;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -12,7 +13,8 @@ import org.springframework.data.domain.Page;
 public interface RecipeCustomRepository {
     Page<RecipeSearchResponse> searchRecipes(
         final RecipeSearchRequest request,
-        final Long userId
+        final Long userId,
+        final UserPreference preference
     );
     Set<Long> findCookableRecipeIds(List<Long> recipeIds, Long userId);
 
