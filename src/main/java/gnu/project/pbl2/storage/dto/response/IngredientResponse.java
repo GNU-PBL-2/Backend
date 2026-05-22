@@ -1,6 +1,6 @@
 package gnu.project.pbl2.storage.dto.response;
 
-import gnu.project.pbl2.Fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.entity.Ingredient;
 import gnu.project.pbl2.storage.entity.StorageMethod;
 import java.util.List;
 
@@ -19,7 +19,7 @@ public record IngredientResponse(
         final List<StorageMethod> storageMethods
     ) {
         return new IngredientResponse(
-            ingredient.getIngredientId(),
+            ingredient.getId(),
             ingredient.getName(),
             ingredient.getCategory().getId(),
             ingredient.getCategory().getName(),

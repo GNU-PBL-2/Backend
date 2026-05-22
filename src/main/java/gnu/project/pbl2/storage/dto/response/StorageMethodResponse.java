@@ -19,7 +19,7 @@ public record StorageMethodResponse(
     public static StorageMethodResponse from(final StorageMethod storageMethod) {
         return new StorageMethodResponse(
             storageMethod.getStorageId(),
-            storageMethod.getIngredient().getIngredientId(),
+            storageMethod.getIngredient().getId(),
             storageMethod.getIngredient().getName(),
             storageMethod.getStorageType(),
             storageMethod.getMinTemp(),

@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: pbl2
+  jpa:
+    open-in-view: false
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;NON_KEYWORDS=VALUE
+    username: sa
+    password:
+
+gemini:
+  api:
+    key: test-gemini-api-key
+
+jwt:
+  secret-key: test-jwt-secret-key-for-testing-purposes-this-must-be-at-least-256-bits-long
+  accessToken-expiration-millis: 86400000
+
+oauth:
+  kakao:
+    client-id: test-kakao-client-id
+    redirect-uri: http://localhost:3000/auth/kakao/callback
+    token-uri: https://kauth.kakao.com/oauth/token
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+    secret: test-kakao-secret
+
+fastapi:
+  base-url: http://localhost:8000

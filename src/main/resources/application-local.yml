@@ -18,7 +18,7 @@ spring:
       path: /h2-console
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:test;MODE=MySQL
+    url: jdbc:h2:mem:testdb;MODE=MySQL;NON_KEYWORDS=VALUE
     username: sa
     password:
 
@@ -30,3 +30,5 @@ oauth:
     user-info-uri: https://kapi.kakao.com/v2/user/me
     secret: ${KAKAO_CLIENT_SECRET}
 
+fastapi:
+  base-url: http://localhost:8000
