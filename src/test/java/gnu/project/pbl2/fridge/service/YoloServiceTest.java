@@ -24,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.reactive.function.client.WebClient;
 
 /**
@@ -61,6 +62,8 @@ class YoloServiceTest {
             .build();
 
         yoloService = new YoloService(webClient, ingredientRepository, ingredientNameMapper, baseUrl);
+        // @Value 주입 없이 new로 생성 시 yoloEnabled 기본값이 false → 강제로 true 설정
+        ReflectionTestUtils.setField(yoloService, "yoloEnabled", true);
     }
 
     @AfterEach
