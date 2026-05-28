@@ -1,0 +1,73 @@
+version: '3.8'
+
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pbl2-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      TZ: Asia/Seoul
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  fastapi:
+    build:
+      context: ./fastapi
+      dockerfile: Dockerfile
+    container_name: pbl2-fastapi
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./fastapi/best.pt:/app/best.pt:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s   # 모델 로딩 시간 여유
+    restart: unless-stopped
+
+  spring:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pbl2-spring
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # DB
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      DB_USERNAME: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      # JWT / OAuth
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      # Gemini
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      # FastAPI: Docker 내부 서비스명으로 통신
+      FASTAPI_BASE_URL: http://fastapi:8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+      fastapi:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  mysql_data:

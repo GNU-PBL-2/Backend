@@ -1,0 +1,38 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;NON_KEYWORDS=VALUE
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+  h2:
+    console:
+      enabled: false
+
+jwt:
+  secret-key: test-jwt-secret-key-minimum-256-bits-aabbccddee
+
+gemini:
+  api:
+    key: test-gemini-api-key
+
+fastapi:
+  base-url: http://localhost:8000
+
+oauth:
+  kakao:
+    client-id: test-kakao-client-id
+    redirect-uri: http://localhost:3000/auth/kakao/callback
+    token-uri: https://kauth.kakao.com/oauth/token
+    user-info-uri: https://kapi.kakao.com/v2/user/me
+    secret: test-kakao-secret

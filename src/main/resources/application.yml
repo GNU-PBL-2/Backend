@@ -15,3 +15,9 @@ gemini:
 jwt:
   secret-key: ${JWT_SECRET_KEY}
   accessToken-expiration-millis: 86400000 # 1일
+
+# FastAPI 서버 주소 (환경변수 FASTAPI_BASE_URL 로 오버라이드 가능)
+# - 로컬 직접 실행: http://localhost:8000 (application-local.yml 에서 재선언)
+# - Docker Compose:  http://fastapi:8000  (docker-compose.yml 환경변수로 주입)
+fastapi:
+  base-url: ${FASTAPI_BASE_URL:http://localhost:8000}
