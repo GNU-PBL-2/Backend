@@ -221,3 +221,16 @@ gradle-app.setting
 build/generated/
 build/generated/sources/
 src/main/generated/
+
+# Python / FastAPI
+fastapi/__pycache__/
+fastapi/**/__pycache__/
+fastapi/*.pt
+fastapi/venv/
+fastapi/.venv/
+*.pyc
+
+.env
+
+uploads/
+fastapi/debug_images/

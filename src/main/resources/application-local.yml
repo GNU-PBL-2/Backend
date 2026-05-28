@@ -32,3 +32,9 @@ oauth:
 
 fastapi:
   base-url: http://localhost:8000
+
+yolo:
+  enabled: false
+  debug:
+    save-images: true
+    save-dir: uploads/yolo/debug

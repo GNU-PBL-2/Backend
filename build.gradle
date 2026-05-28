@@ -73,6 +73,10 @@ dependencies {
     // mockito
     testImplementation 'org.mockito:mockito-core:5.11.0'
 
+    // MockWebServer — WebClient(FastAPI 호출) 테스트용 가짜 HTTP 서버
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
+    testImplementation 'com.squareup.okhttp3:okhttp:4.12.0'
+
 }
 
 tasks.named('test') {

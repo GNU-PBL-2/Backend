@@ -16,6 +16,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @Slf4j
 @RestControllerAdvice
@@ -71,6 +72,14 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse<Void>> handleIllegalArgumentException(
         IllegalArgumentException e) {
         log.error("IllegalArgumentException", e);
+        return createErrorResponseEntity(ErrorCode.BAD_REQUEST, e.getMessage());
+    }
+
+    // multipart 필수 파트 누락 — 클라이언트 오류이므로 400 반환
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    protected ResponseEntity<ErrorResponse<Void>> handleMissingServletRequestPart(
+        MissingServletRequestPartException e) {
+        log.warn("MissingServletRequestPartException: {}", e.getMessage());
         return createErrorResponseEntity(ErrorCode.BAD_REQUEST, e.getMessage());
     }
 

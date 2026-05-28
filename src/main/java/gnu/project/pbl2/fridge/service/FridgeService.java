@@ -44,10 +44,10 @@ public class FridgeService {
     // 회원과 재료를 검증한 뒤 냉장고 재료를 새로 등록한다.
     public FridgeResponse addIngredient(final FridgeCreateRequest request) {
         final User member = userRepository.findById(request.memberId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+            .orElseThrow(() -> new BusinessException(ErrorCode.USER_NOT_FOUND));
 
         final Ingredient ingredient = ingredientRepository.findById(request.ingredientId())
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 재료입니다."));
+            .orElseThrow(() -> new BusinessException(ErrorCode.INGREDIENT_NOT_FOUND));
 
         final Fridge fridge = Fridge.create(
             member,
