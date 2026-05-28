@@ -136,24 +136,26 @@ class FridgeServiceTest {
         }
 
         @Test
-        @DisplayName("존재하지 않는 회원 ID면 IllegalArgumentException이 발생한다")
+        @DisplayName("존재하지 않는 회원 ID면 USER_NOT_FOUND 예외가 발생한다")
         void 회원_없으면_예외() {
             given(userRepository.findById(1L)).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> fridgeService.addIngredient(validRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 회원");
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.USER_NOT_FOUND);
         }
 
         @Test
-        @DisplayName("존재하지 않는 재료 ID면 IllegalArgumentException이 발생한다")
+        @DisplayName("존재하지 않는 재료 ID면 INGREDIENT_NOT_FOUND 예외가 발생한다")
         void 재료_없으면_예외() {
             given(userRepository.findById(1L)).willReturn(Optional.of(mockUser));
             given(ingredientRepository.findById(10L)).willReturn(Optional.empty());
 
             assertThatThrownBy(() -> fridgeService.addIngredient(validRequest))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("존재하지 않는 재료");
+                .isInstanceOf(BusinessException.class)
+                .extracting(e -> ((BusinessException) e).getErrorCode())
+                .isEqualTo(ErrorCode.INGREDIENT_NOT_FOUND);
         }
     }
 

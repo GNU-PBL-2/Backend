@@ -115,7 +115,7 @@ public class YoloService {
      */
     private void validateImageFile(final MultipartFile imageFile) {
         final String contentType = imageFile.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
+        if (contentType == null || !contentType.startsWith("image/") || imageFile.isEmpty()) {
             throw new BusinessException(ErrorCode.YOLO_INVALID_IMAGE);
         }
     }
@@ -156,7 +156,7 @@ public class YoloService {
                         })
                 )
                 .bodyToMono(YoloApiResponse.class)
-                .block();
+                .block(java.time.Duration.ofSeconds(30));
 
             if (response == null || response.ingredients() == null) {
                 throw new BusinessException(ErrorCode.YOLO_DETECT_FAILED);

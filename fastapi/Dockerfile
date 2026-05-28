@@ -2,7 +2,8 @@ FROM ultralytics/yolov5:latest-cpu
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir fastapi uvicorn python-multipart
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
 
