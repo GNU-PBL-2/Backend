@@ -46,6 +46,9 @@ class YoloServiceTest {
     @Mock
     private IngredientRepository ingredientRepository;
 
+    @Mock
+    private IngredientNameMapper ingredientNameMapper;
+
     @BeforeEach
     void setUp() throws IOException {
         mockWebServer = new MockWebServer();
@@ -57,7 +60,7 @@ class YoloServiceTest {
             .codecs(c -> c.defaultCodecs().maxInMemorySize(16 * 1024 * 1024))
             .build();
 
-        yoloService = new YoloService(webClient, ingredientRepository, baseUrl);
+        yoloService = new YoloService(webClient, ingredientRepository, ingredientNameMapper, baseUrl);
     }
 
     @AfterEach
@@ -158,10 +161,11 @@ class YoloServiceTest {
         @Test
         @DisplayName("감지된 재료가 모두 DB에 있으면 matched 목록에 전부 담긴다")
         void 전체_매칭_성공() {
-            // given() 호출 전에 픽스처 객체를 미리 생성 (Mockito 중첩 stubbing 방지)
             Ingredient tomato = fakeIngredient(65L, "토마토");
             Ingredient onion  = fakeIngredient(13L, "양파");
-            enqueueYoloResponse("토마토", "양파");
+            enqueueYoloResponse("tomato", "onion");
+            given(ingredientNameMapper.toKorean("tomato")).willReturn(Optional.of("토마토"));
+            given(ingredientNameMapper.toKorean("onion")).willReturn(Optional.of("양파"));
             given(ingredientRepository.findByName("토마토")).willReturn(Optional.of(tomato));
             given(ingredientRepository.findByName("양파")).willReturn(Optional.of(onion));
 
@@ -175,12 +179,13 @@ class YoloServiceTest {
         }
 
         @Test
-        @DisplayName("DB에 없는 재료는 unmatched 목록에 담긴다")
+        @DisplayName("매퍼에 없는 클래스명은 DB 조회 없이 unmatched에 담긴다")
         void 일부_미매칭() {
             Ingredient tomato = fakeIngredient(65L, "토마토");
-            enqueueYoloResponse("토마토", "avocado");
+            enqueueYoloResponse("tomato", "avocado");
+            given(ingredientNameMapper.toKorean("tomato")).willReturn(Optional.of("토마토"));
+            // avocado: 매퍼 미등록 → mock 기본값 Optional.empty() → unmatched
             given(ingredientRepository.findByName("토마토")).willReturn(Optional.of(tomato));
-            given(ingredientRepository.findByName("avocado")).willReturn(Optional.empty());
 
             DetectedIngredientResponse result = yoloService.detectIngredients(jpegImage());
 
@@ -190,11 +195,10 @@ class YoloServiceTest {
         }
 
         @Test
-        @DisplayName("감지된 재료가 전부 DB에 없으면 matched는 비어있고 unmatched에 모두 담긴다")
+        @DisplayName("매퍼에 없는 클래스명만 감지되면 matched는 비어있고 unmatched에 모두 담긴다")
         void 전체_미매칭() {
             enqueueYoloResponse("mango", "avocado");
-            given(ingredientRepository.findByName("mango")).willReturn(Optional.empty());
-            given(ingredientRepository.findByName("avocado")).willReturn(Optional.empty());
+            // 두 클래스 모두 매퍼 미등록 → mock 기본값 Optional.empty() → 전부 unmatched
 
             DetectedIngredientResponse result = yoloService.detectIngredients(jpegImage());
 
