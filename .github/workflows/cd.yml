@@ -1,0 +1,119 @@
+name: CD
+
+# main 브랜치 push 시 실행 (PR merge 후)
+# 브랜치 보호 규칙으로 CI 통과 필수 설정 권장
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # ── Docker 이미지 빌드 & Docker Hub Push ─────────────────
+  build-and-push:
+    name: Docker Build & Push
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Docker Buildx 설정
+        uses: docker/setup-buildx-action@v3
+
+      - name: Spring 이미지 빌드 & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/pbl2-spring:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/pbl2-spring:${{ github.sha }}
+          cache-from: type=gha,scope=spring
+          cache-to: type=gha,scope=spring,mode=max
+
+      - name: FastAPI 이미지 빌드 & Push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./fastapi
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/pbl2-fastapi:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/pbl2-fastapi:${{ github.sha }}
+          cache-from: type=gha,scope=fastapi
+          cache-to: type=gha,scope=fastapi,mode=max
+
+  # ── EC2 배포 ──────────────────────────────────────────────
+  deploy:
+    name: EC2 배포
+    runs-on: ubuntu-latest
+    needs: build-and-push
+
+    steps:
+      - name: 소스 체크아웃
+        uses: actions/checkout@v4
+
+      - name: docker-compose.prod.yml EC2 전송
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: docker-compose.prod.yml
+          target: ~/pbl2/
+
+      - name: EC2 배포 실행
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+          KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+          KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+          KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,MYSQL_ROOT_PASSWORD,MYSQL_DATABASE,MYSQL_USER,MYSQL_PASSWORD,JWT_SECRET_KEY,KAKAO_CLIENT_ID,KAKAO_CLIENT_SECRET,KAKAO_REDIRECT_URI,GEMINI_API_KEY
+          script: |
+            set -e
+            cd ~/pbl2
+
+            # .env 파일 갱신
+            cat > .env <<EOF
+            DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
+            MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE=${MYSQL_DATABASE}
+            MYSQL_USER=${MYSQL_USER}
+            MYSQL_PASSWORD=${MYSQL_PASSWORD}
+            JWT_SECRET_KEY=${JWT_SECRET_KEY}
+            KAKAO_CLIENT_ID=${KAKAO_CLIENT_ID}
+            KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
+            KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
+            GEMINI_API_KEY=${GEMINI_API_KEY}
+            EOF
+
+            # Docker Hub 로그인
+            echo "${DOCKERHUB_TOKEN}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+
+            # 최신 이미지 Pull
+            docker pull ${DOCKERHUB_USERNAME}/pbl2-spring:latest
+            docker pull ${DOCKERHUB_USERNAME}/pbl2-fastapi:latest
+
+            # 기존 컨테이너 중지 후 재시작 (MySQL 볼륨은 유지)
+            docker compose -f docker-compose.prod.yml down --remove-orphans
+            docker compose -f docker-compose.prod.yml up -d
+
+            # 사용하지 않는 구 이미지 정리
+            docker image prune -f
