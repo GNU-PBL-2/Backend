@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: pbl2-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpbl2pass
+      MYSQL_DATABASE: pbl2
+      MYSQL_USER: pbl2
+      MYSQL_PASSWORD: pbl2pass
+      TZ: Asia/Seoul
+    # 운영: MySQL은 컨테이너 내부 네트워크만 사용, 호스트에 직접 노출하지 않음
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpbl2pass"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+
+  fastapi:
+    # FASTAPI_IMAGE: CD에서 SHA 태그로 주입 (예: username/pbl2-fastapi:abc1234)
+    image: ${FASTAPI_IMAGE}
+    container_name: pbl2-fastapi
+    ports:
+      - "8000:8000"
+    volumes:
+      # best.pt는 EC2에 ~/pbl2/best.pt 로 수동 업로드 필요
+      - ./best.pt:/app/best.pt:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  spring:
+    # SPRING_IMAGE: CD에서 SHA 태그로 주입 (예: username/pbl2-spring:abc1234)
+    image: ${SPRING_IMAGE}
+    container_name: pbl2-spring
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:mysql://mysql:3306/pbl2?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      DB_USERNAME: pbl2
+      DB_PASSWORD: pbl2pass
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
+      KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
+      KAKAO_REDIRECT_URI: ${KAKAO_REDIRECT_URI}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      FASTAPI_BASE_URL: http://fastapi:8000
+    depends_on:
+      mysql:
+        condition: service_healthy
+      fastapi:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
