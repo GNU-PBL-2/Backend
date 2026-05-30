@@ -5,17 +5,17 @@ services:
     image: mysql:8.0
     container_name: pbl2-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: rootpbl2pass
+      MYSQL_DATABASE: pbl2
+      MYSQL_USER: pbl2
+      MYSQL_PASSWORD: pbl2pass
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpbl2pass"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -45,9 +45,9 @@ services:
       - "8080:8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-      DB_USERNAME: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_URL: jdbc:mysql://mysql:3306/pbl2?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      DB_USERNAME: pbl2
+      DB_PASSWORD: pbl2pass
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       KAKAO_CLIENT_ID: ${KAKAO_CLIENT_ID}
       KAKAO_CLIENT_SECRET: ${KAKAO_CLIENT_SECRET}
