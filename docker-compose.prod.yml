@@ -10,8 +10,7 @@ services:
       MYSQL_USER: pbl2
       MYSQL_PASSWORD: pbl2pass
       TZ: Asia/Seoul
-    ports:
-      - "3306:3306"
+    # 운영: MySQL은 컨테이너 내부 네트워크만 사용, 호스트에 직접 노출하지 않음
     volumes:
       - mysql_data:/var/lib/mysql
     healthcheck:
@@ -23,7 +22,8 @@ services:
     restart: unless-stopped
 
   fastapi:
-    image: ${DOCKERHUB_USERNAME}/pbl2-fastapi:latest
+    # FASTAPI_IMAGE: CD에서 SHA 태그로 주입 (예: username/pbl2-fastapi:abc1234)
+    image: ${FASTAPI_IMAGE}
     container_name: pbl2-fastapi
     ports:
       - "8000:8000"
@@ -39,7 +39,8 @@ services:
     restart: unless-stopped
 
   spring:
-    image: ${DOCKERHUB_USERNAME}/pbl2-spring:latest
+    # SPRING_IMAGE: CD에서 SHA 태그로 주입 (예: username/pbl2-spring:abc1234)
+    image: ${SPRING_IMAGE}
     container_name: pbl2-spring
     ports:
       - "8080:8080"
@@ -58,7 +59,7 @@ services:
       mysql:
         condition: service_healthy
       fastapi:
-        condition: service_started
+        condition: service_healthy
     restart: unless-stopped
 
 volumes:
