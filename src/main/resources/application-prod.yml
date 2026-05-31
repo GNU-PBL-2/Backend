@@ -9,7 +9,7 @@ spring:
     password: ${DB_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: validate        # 운영: 스키마 자동 변경 금지
+      ddl-auto: update
     show-sql: false
     defer-datasource-initialization: false
 
