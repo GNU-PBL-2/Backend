@@ -103,6 +103,18 @@ jobs:
             mkdir -p ~/pbl2
             cd ~/pbl2
 
+            # best.pt 파일 검증 (없으면 Docker가 디렉토리로 만들어 FastAPI 실패)
+            if [ -d ./best.pt ]; then
+              echo "ERROR: best.pt가 디렉토리입니다. 삭제 후 파일을 업로드하세요."
+              rm -rf ./best.pt
+              exit 1
+            fi
+            if [ ! -f ./best.pt ]; then
+              echo "ERROR: best.pt 파일이 없습니다. 아래 명령으로 업로드하세요."
+              echo "  scp -P ${SERVER_PORT} best.pt ${SERVER_USER}@${SERVER_HOST}:~/pbl2/best.pt"
+              exit 1
+            fi
+
             # .env 파일 갱신
             cat > .env <<EOF
             DOCKERHUB_USERNAME=${DOCKERHUB_USERNAME}
