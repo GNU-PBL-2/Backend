@@ -36,11 +36,38 @@ services:
       - pbl2-network
     restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: pbl2-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN=${DOMAIN}
+    volumes:
+      - ./nginx/templates:/etc/nginx/templates:ro
+      - ./certbot/conf:/etc/letsencrypt:ro
+      - ./certbot/www:/var/www/certbot:ro
+    depends_on:
+      - spring
+    networks:
+      - pbl2-network
+    restart: unless-stopped
+
+  certbot:
+    image: certbot/certbot
+    container_name: pbl2-certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    networks:
+      - pbl2-network
+
   spring:
     image: ${SPRING_IMAGE}
     container_name: pbl2-spring
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_URL: jdbc:mysql://pbl2-mysql:3306/pbl2?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
