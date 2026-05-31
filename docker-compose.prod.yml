@@ -27,7 +27,7 @@ services:
     volumes:
       - ./best.pt:/app/best.pt:ro
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
       interval: 15s
       timeout: 10s
       retries: 10
