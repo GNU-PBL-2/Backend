@@ -71,14 +71,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: docker-compose.prod.yml 서버 전송
+      - name: 설정 파일 서버 전송
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          source: docker-compose.prod.yml
+          source: "docker-compose.prod.yml,nginx/templates/default.conf.template,init-letsencrypt.sh"
           target: ~/pbl2/
 
       - name: 서버 배포 실행
@@ -92,12 +92,13 @@ jobs:
           KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
           KAKAO_REDIRECT_URI: ${{ secrets.KAKAO_REDIRECT_URI }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          DOMAIN: ${{ secrets.DOMAIN }}
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           password: ${{ secrets.SERVER_PASSWORD }}
           port: ${{ secrets.SERVER_PORT }}
-          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,IMAGE_TAG,JWT_SECRET_KEY,KAKAO_CLIENT_ID,KAKAO_CLIENT_SECRET,KAKAO_REDIRECT_URI,GEMINI_API_KEY
+          envs: DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,IMAGE_TAG,JWT_SECRET_KEY,KAKAO_CLIENT_ID,KAKAO_CLIENT_SECRET,KAKAO_REDIRECT_URI,GEMINI_API_KEY,DOMAIN
           script: |
             set -e
             mkdir -p ~/pbl2
@@ -123,6 +124,7 @@ jobs:
             KAKAO_CLIENT_SECRET=${KAKAO_CLIENT_SECRET}
             KAKAO_REDIRECT_URI=${KAKAO_REDIRECT_URI}
             GEMINI_API_KEY=${GEMINI_API_KEY}
+            DOMAIN=${DOMAIN}
             EOF
 
             # Docker Hub 로그인
