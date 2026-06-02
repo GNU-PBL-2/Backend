@@ -18,7 +18,7 @@ public class Accessor {
     }
 
     public boolean isUser() {
-        return userRole == UserRole.USER;
+        return userRole == UserRole.USER || userRole == UserRole.ADMIN;
     }
 
     public boolean isAdmin() {

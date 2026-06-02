@@ -318,7 +318,7 @@ VALUES
     (84, 10);  -- 소시지    → 돼지고기
 
 INSERT IGNORE INTO users(name, social_id, social_provider, user_role, email, public_id, is_deleted)
-VALUES ('홍종민', 4413420704, 'KAKAO', 'USER', 'gwa7417@gmail.com',
+VALUES ('홍종민', 4413420704, 'KAKAO', 'ADMIN', 'gwa7417@gmail.com',
         X'88433dfbaa3c43eeb5fcd46fc5649c97', false);
 
 -- ── 홍종민(member_id=1) 냉장고 재료 ──────────────────────────────
