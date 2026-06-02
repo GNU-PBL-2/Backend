@@ -1,5 +1,6 @@
 package gnu.project.pbl2.admin.service;
 
+import gnu.project.pbl2.admin.dto.AdminRecipeCreateRequest;
 import gnu.project.pbl2.fridge.entity.Ingredient;
 import gnu.project.pbl2.fridge.repository.IngredientRepository;
 import gnu.project.pbl2.admin.dto.GeminiRecipeDto;
@@ -15,6 +16,8 @@ import gnu.project.pbl2.recipe.repository.RecipeRepository;
 import gnu.project.pbl2.recipe.repository.RecipeStepRepository;
 import gnu.project.pbl2.recipeingredient.entity.RecipeIngredient;
 import gnu.project.pbl2.recipeingredient.repository.RecipeIngredientRepository;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +59,8 @@ public class RecipeImportService {
                 taste,
                 dto.cookTimeMin(),
                 dto.description(),
-                youtubeUrl
+                youtubeUrl,
+                extractThumbnailUrl(youtubeUrl)
             )
         );
 
@@ -79,5 +83,77 @@ public class RecipeImportService {
         recipe.addSteps(steps);
 
         return recipe.getId();
+    }
+
+    @Transactional
+    public Long createManually(final AdminRecipeCreateRequest request) {
+        final Category category = categoryRepository.findByName(request.categoryName())
+            .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        final Taste taste = tasteRepository.findByName(request.tasteName())
+            .orElseThrow(() -> new BusinessException(ErrorCode.TASTE_NOT_FOUND));
+
+        String thumbnailUrl = (request.thumbnailUrl() != null && !request.thumbnailUrl().isBlank())
+            ? request.thumbnailUrl()
+            : extractThumbnailUrl(request.youtubeUrl());
+
+        final Recipe recipe = recipeRepository.save(Recipe.create(
+            request.title(), category, taste, request.cookTimeMin(),
+            request.description(), request.youtubeUrl(), thumbnailUrl
+        ));
+
+        if (request.ingredients() != null) {
+            request.ingredients().forEach(ing -> {
+                Ingredient ingredient = ingredientRepository.findByName(ing.name())
+                    .orElseGet(() -> ingredientRepository.save(Ingredient.create(ing.name(), category)));
+                recipeIngredientRepository.save(
+                    RecipeIngredient.create(recipe.getId(), ingredient,
+                        ing.amount(), ing.unit(), ing.isSubstitutable()));
+            });
+        }
+
+        List<RecipeStep> steps = new ArrayList<>();
+        if (request.steps() != null) {
+            for (int i = 0; i < request.steps().size(); i++) {
+                steps.add(recipeStepRepository.save(RecipeStep.of(recipe, i + 1, request.steps().get(i))));
+            }
+        }
+        recipe.addSteps(steps);
+
+        return recipe.getId();
+    }
+
+    private String extractThumbnailUrl(String youtubeUrl) {
+        try {
+            URI uri = new URI(youtubeUrl);
+            String host = uri.getHost() == null ? "" : uri.getHost();
+            String path = uri.getPath() == null ? "" : uri.getPath();
+            String query = uri.getQuery() == null ? "" : uri.getQuery();
+
+            String videoId = null;
+
+            if (host.contains("youtu.be")) {
+                // https://youtu.be/VIDEO_ID
+                videoId = path.replaceFirst("^/", "");
+            } else if (path.startsWith("/shorts/")) {
+                // https://www.youtube.com/shorts/VIDEO_ID
+                videoId = path.substring("/shorts/".length());
+            } else {
+                // https://www.youtube.com/watch?v=VIDEO_ID
+                for (String param : query.split("&")) {
+                    if (param.startsWith("v=")) {
+                        videoId = param.substring(2);
+                        break;
+                    }
+                }
+            }
+
+            if (videoId == null || videoId.isBlank()) {
+                return null;
+            }
+            return "https://img.youtube.com/vi/" + videoId + "/maxresdefault.jpg";
+        } catch (URISyntaxException e) {
+            return null;
+        }
     }
 }

@@ -9,7 +9,9 @@ public record RecipeResponseDto(
     String title,
     String thumbnailUrl,
     String categoryName,
+    String tasteName,
     Integer cookTimeMin,
+    String description,
     String youtubeUrl,
     boolean favorite,
 

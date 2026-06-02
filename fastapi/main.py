@@ -167,7 +167,7 @@ async def analyze_recipe(req: YoutubeRequest):
     for attempt in range(max_retries):
         try:
             response = client.models.generate_content(
-                model="gemini-2.0-flash-preview",
+                model="gemini-3-flash-preview",
                 contents=types.Content(
                     parts=[
                         types.Part(
@@ -190,6 +190,7 @@ async def analyze_recipe(req: YoutubeRequest):
 
         except Exception as e:
             error_msg = str(e)
+            print(f"[analyze-recipe] attempt={attempt} error={error_msg}", flush=True)
             if "503" in error_msg and attempt < max_retries - 1:
                 await asyncio.sleep(retry_delay * (attempt + 1))
                 continue
