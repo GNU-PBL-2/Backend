@@ -10,7 +10,9 @@ public record RecipeSearchRequest(
     RecipeTab tab,
 
     @Min(0) int page,
-    @Min(6) @Max(20) int size
+    @Min(6) @Max(20) int size,
+
+    boolean usePreference
 
 ) {
 

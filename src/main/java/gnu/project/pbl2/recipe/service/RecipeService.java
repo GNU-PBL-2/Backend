@@ -63,7 +63,9 @@ public class RecipeService {
         final Accessor accessor
     ) {
         Long userId = accessor.getUserId();
-        UserPreference preference = loadUserPreference(userId);
+        UserPreference preference = request.usePreference()
+            ? loadUserPreference(userId)
+            : UserPreference.empty();
 
         Page<RecipeSearchResponse> page = recipeRepository.searchRecipes(request, userId, preference);
         List<Long> recipeIds = page.getContent().stream()
