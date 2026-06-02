@@ -64,7 +64,7 @@ class FridgeControllerTest extends ControllerTestSupport {
             given(fridgeService.getFridgeByMemberId(1L))
                 .willReturn(List.of(sampleFridgeResponse()));
 
-            mockMvc.perform(get("/api/v1/fridge/1"))
+            mockMvc.perform(withUser(get("/api/v1/fridge/1")))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].fridgeId").value(100))
@@ -77,7 +77,7 @@ class FridgeControllerTest extends ControllerTestSupport {
         void 냉장고_비어있으면_빈배열_200() throws Exception {
             given(fridgeService.getFridgeByMemberId(1L)).willReturn(List.of());
 
-            mockMvc.perform(get("/api/v1/fridge/1"))
+            mockMvc.perform(withUser(get("/api/v1/fridge/1")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$").isEmpty());

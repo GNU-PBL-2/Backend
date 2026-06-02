@@ -4,14 +4,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import gnu.project.pbl2.auth.aop.LoginArgumentResolver;
+import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.auth.jwt.JwtInterceptor;
 import gnu.project.pbl2.auth.service.OauthService;
+import gnu.project.pbl2.common.enumerated.UserRole;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 /**
  * {@code @WebMvcTest} 기반 컨트롤러 테스트 공통 베이스 클래스.
@@ -61,5 +63,15 @@ public abstract class ControllerTestSupport {
     @BeforeEach
     void setUpAuthMock() throws Exception {
         given(jwtInterceptor.preHandle(any(), any(), any())).willReturn(true);
+        given(oauthService.getCurrentAccessor(any(), any(), any()))
+            .willReturn(Accessor.user("test-social-id", 1L, UserRole.USER));
+    }
+
+    /** 인증된 유저 request attribute를 주입하는 헬퍼 */
+    protected MockHttpServletRequestBuilder withUser(MockHttpServletRequestBuilder builder) {
+        return builder
+            .requestAttr("socialId", "test-social-id")
+            .requestAttr("userId", 1L)
+            .requestAttr("userRole", UserRole.USER);
     }
 }
