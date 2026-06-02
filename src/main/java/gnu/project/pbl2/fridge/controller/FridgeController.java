@@ -1,5 +1,8 @@
 package gnu.project.pbl2.fridge.controller;
 
+import gnu.project.pbl2.auth.aop.Auth;
+import gnu.project.pbl2.auth.aop.OnlyUser;
+import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.fridge.controller.docs.FridgeDocs;
 import gnu.project.pbl2.fridge.dto.request.FridgeCreateRequest;
 import gnu.project.pbl2.fridge.dto.request.FridgeUpdateRequest;
@@ -39,10 +42,14 @@ public class FridgeController implements FridgeDocs {
     // YOLO 기반 재료 감지 비즈니스 로직을 담당하는 서비스
     private final YoloService yoloService;
 
-    // 특정 회원이 보유한 냉장고 재료 목록을 조회한다.
+    // 로그인한 회원의 냉장고 재료 목록을 조회한다.
+    @OnlyUser
     @GetMapping("/{memberId}")
-    public ResponseEntity<List<FridgeResponse>> getFridge(@PathVariable final Long memberId) {
-        return ResponseEntity.ok(fridgeService.getFridgeByMemberId(memberId));
+    public ResponseEntity<List<FridgeResponse>> getFridge(
+        @PathVariable final Long memberId,
+        @Auth final Accessor accessor
+    ) {
+        return ResponseEntity.ok(fridgeService.getFridgeByMemberId(accessor.getUserId()));
     }
 
     // 냉장고에 새로운 재료를 추가한다.
