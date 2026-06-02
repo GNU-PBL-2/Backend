@@ -24,6 +24,8 @@ services:
   fastapi:
     image: ${FASTAPI_IMAGE}
     container_name: pbl2-fastapi
+    environment:
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
     volumes:
       - ./best.pt:/app/best.pt:ro
     healthcheck:
