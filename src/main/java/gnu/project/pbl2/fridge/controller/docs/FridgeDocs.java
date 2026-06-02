@@ -1,5 +1,6 @@
 package gnu.project.pbl2.fridge.controller.docs;
 
+import gnu.project.pbl2.auth.entity.Accessor;
 import gnu.project.pbl2.fridge.dto.request.FridgeCreateRequest;
 import gnu.project.pbl2.fridge.dto.request.FridgeUpdateRequest;
 import gnu.project.pbl2.fridge.dto.response.DetectedIngredientResponse;
@@ -28,7 +29,8 @@ public interface FridgeDocs {
         @ApiResponse(responseCode = "200", description = "조회 성공")
     })
     ResponseEntity<List<FridgeResponse>> getFridge(
-        @Parameter(description = "회원 ID", required = true) Long memberId
+        @Parameter(description = "회원 ID", required = true) Long memberId,
+        Accessor accessor
     );
 
     @Operation(summary = "냉장고 재료 등록", description = "냉장고에 새로운 재료를 추가합니다.")
