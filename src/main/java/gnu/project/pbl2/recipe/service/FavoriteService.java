@@ -58,7 +58,7 @@ public class FavoriteService {
     @Transactional(readOnly = true)
     public Page<RecipeSearchResponse> getFavorites(final FavoriteListRequest request, final Accessor accessor) {
         RecipeSearchRequest searchRequest = new RecipeSearchRequest(
-            request.keyword(), RecipeTab.FAVORITE, request.page(), request.size()
+            request.keyword(), RecipeTab.FAVORITE, request.page(), request.size(), true
         );
         return recipeService.getRecipes(searchRequest, accessor);
     }
