@@ -66,7 +66,8 @@ public class Recipe extends BaseEntity {
         Taste taste,
         Integer cookTimeMin,
         String description,
-        String youtubeUrl
+        String youtubeUrl,
+        String thumbnailUrl
     ) {
         Recipe recipe = new Recipe();
         recipe.title = title;
@@ -75,6 +76,7 @@ public class Recipe extends BaseEntity {
         recipe.cookTimeMin = cookTimeMin;
         recipe.description = description;
         recipe.youtubeUrl = youtubeUrl;
+        recipe.thumbnailUrl = thumbnailUrl;
         return recipe;
     }
 
