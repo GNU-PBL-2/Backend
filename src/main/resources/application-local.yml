@@ -2,10 +2,10 @@ spring:
   config:
     activate:
       on-profile: local
+  sql:
+    init:
+      mode: always
   jpa:
-    sql:
-      init:
-        mode: always
     hibernate:
       ddl-auto: create-drop
     defer-datasource-initialization: true
