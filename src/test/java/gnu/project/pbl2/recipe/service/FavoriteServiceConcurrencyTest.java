@@ -44,7 +44,7 @@ class FavoriteServiceConcurrencyTest {
         Category category = categoryRepository.findByName("한식").orElseThrow();
         Taste taste = tasteRepository.findByName("매운맛").orElseThrow();
         Recipe recipe = recipeRepository.save(
-            Recipe.create("테스트 레시피", category, taste, 30, "테스트 설명", "https://youtube.com")
+            Recipe.create("테스트 레시피", category, taste, 30, "테스트 설명", "https://youtube.com", null)
         );
         recipeId = recipe.getId();
 
