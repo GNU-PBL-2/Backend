@@ -57,7 +57,7 @@ public class OauthService {
     private boolean isUserExists(String socialId, UserRole userRole) {
         return switch (userRole) {
             case USER ->userRepository.existsByOauthInfo_SocialId(socialId);
-//            case ADMIN -> customerRepository.existsByOauthInfo_SocialId(socialId);
+            case ADMIN -> userRepository.existsByOauthInfo_SocialId(socialId);
             default -> false;
         };
     }
