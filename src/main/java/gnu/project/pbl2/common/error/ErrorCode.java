@@ -47,6 +47,9 @@ public enum ErrorCode {
     FRIDGE_NOT_FOUND(HttpStatus.NOT_FOUND,"FRIDGE9001" ,"냉장고를 찾을 수 없습니다" ),
     RECIPE_INGREDIENT_NOT_FOUND(HttpStatus.NOT_FOUND,"RECIPE_INGREDENT1001" ,"레시피 재료를 찾을 수 없습니다"),
 
+    // cart
+    CART_ITEM_NOT_FOUND(HttpStatus.NOT_FOUND, "CART1001", "해당 장바구니 항목을 찾을 수 없습니다."),
+
     // yolo
     YOLO_DETECT_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "YOLO1001", "재료 감지에 실패했습니다."),
     YOLO_INVALID_IMAGE(HttpStatus.BAD_REQUEST, "YOLO1002", "이미지 파일만 업로드 가능합니다.");
