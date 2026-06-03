@@ -1,27 +1,37 @@
 package gnu.project.pbl2.recipe.dto.response;
 
+import gnu.project.pbl2.fridge.enumerated.FridgeStatus;
+import java.util.List;
 
 public record RecipeSearchResponse(
     Long id,
     String title,
     String thumbnailUrl,
     Integer cookTimeMin,
-    boolean cookable,               // "조리가능" 뱃지
-    int expiringIngredientCount,    // "임박재료 N개" 뱃지
-    boolean isFavorite                // 하트 채움 여부
+    boolean cookable,
+    int expiringIngredientCount,
+    boolean isFavorite,
+    List<IngredientSummary> ingredients
 ) {
-    // 1단계: 레시피 기본 정보만으로 생성 (뱃지는 기본값)
+    public record IngredientSummary(
+        Long ingredientId,
+        String name,
+        FridgeStatus fridgeStatus
+    ) {}
+
     public static RecipeSearchResponse ofBase(
         Long id, String title, String thumbnailUrl, Integer cookTimeMin
     ) {
-        return new RecipeSearchResponse(id, title, thumbnailUrl, cookTimeMin, false, 0, false);
+        return new RecipeSearchResponse(id, title, thumbnailUrl, cookTimeMin, false, 0, false, List.of());
     }
 
-    // 2단계: 뱃지 정보 조립
-    public RecipeSearchResponse withBadge(boolean cookable, int expiringCount, boolean favorite) {
+    public RecipeSearchResponse withBadgeAndIngredients(
+        boolean cookable, int expiringCount, boolean favorite,
+        List<IngredientSummary> ingredients
+    ) {
         return new RecipeSearchResponse(
             this.id, this.title, this.thumbnailUrl, this.cookTimeMin,
-            cookable, expiringCount, favorite
+            cookable, expiringCount, favorite, ingredients
         );
     }
 }
