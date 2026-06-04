@@ -19,11 +19,11 @@ public interface CartDocs {
     ResponseEntity<List<CartItemResponse>> addItems(Accessor accessor, CartItemAddBatchRequest request);
 
     @Operation(summary = "장바구니 항목 수정 (수량 또는 체크 상태)")
-    ResponseEntity<CartItemResponse> updateItem(Long cartItemId, CartItemUpdateRequest request);
+    ResponseEntity<CartItemResponse> updateItem(Accessor accessor, Long cartItemId, CartItemUpdateRequest request);
 
     @Operation(summary = "장바구니 항목 단건 삭제")
-    ResponseEntity<Void> deleteItem(Long cartItemId);
+    ResponseEntity<Void> deleteItem(Accessor accessor, Long cartItemId);
 
     @Operation(summary = "장바구니 항목 일괄 삭제")
-    ResponseEntity<Void> deleteItems(List<Long> cartItemIds);
+    ResponseEntity<Void> deleteItems(Accessor accessor, List<Long> cartItemIds);
 }
