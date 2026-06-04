@@ -12,7 +12,7 @@ public record RecipeSearchRequest(
     @Min(0) int page,
     @Min(6) @Max(20) int size,
 
-    boolean usePreference
+    Boolean usePreference
 
 ) {
 
@@ -22,6 +22,9 @@ public record RecipeSearchRequest(
         }
         if (size == 0) {
             size = 10;
+        }
+        if (usePreference == null) {
+            usePreference = true;
         }
     }
 }

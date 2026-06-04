@@ -1,7 +1,5 @@
 package gnu.project.pbl2.recipe.repository.impl;
 
-import static com.querydsl.core.types.dsl.Expressions.asBoolean;
-import static com.querydsl.core.types.dsl.Expressions.asNumber;
 import static gnu.project.pbl2.fridge.entity.QFridge.fridge;
 import static gnu.project.pbl2.recipe.entity.QFavorite.favorite;
 import static gnu.project.pbl2.recipe.entity.QRecipe.recipe;
@@ -12,7 +10,6 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.SubQueryExpression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.JPAExpressions;
@@ -140,22 +137,22 @@ public class RecipeCustomRepositoryImpl implements RecipeCustomRepository {
         OrderSpecifier<?>... orders
     ) {
         List<RecipeSearchResponse> content = queryFactory
-            .select(Projections.constructor(RecipeSearchResponse.class,
-                recipe.id,
-                recipe.title,
-                recipe.thumbnailUrl,
-                recipe.cookTimeMin,
-                asBoolean(false),
-                asNumber(0).intValue(),
-                asBoolean(false)
-            ))
+            .select(recipe.id, recipe.title, recipe.thumbnailUrl, recipe.cookTimeMin)
             .from(recipe)
             .leftJoin(recipe.category)
             .where(condition, recipe.isDeleted.isFalse())
             .orderBy(orders)
             .offset((long) request.page() * request.size())
             .limit(request.size())
-        .fetch();
+            .fetch()
+            .stream()
+            .map(t -> RecipeSearchResponse.ofBase(
+                t.get(recipe.id),
+                t.get(recipe.title),
+                t.get(recipe.thumbnailUrl),
+                t.get(recipe.cookTimeMin)
+            ))
+            .toList();
 
         long total = queryFactory
             .select(recipe.count())

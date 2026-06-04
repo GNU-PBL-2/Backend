@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -80,12 +81,31 @@ public class RecipeService {
         Map<Long, Long> expiringMap = recipeRepository.findExpiringCountMap(recipeIds, userId);
         Set<Long> favoriteIds = recipeRepository.findFavoriteRecipeIds(recipeIds, userId);
 
+        Set<Long> myIngredientIds = fridgeRepository.findIngredientIdsByUserId(userId);
+        Set<Long> expiringIngredientIds = fridgeRepository.findExpiringIngredientIds(
+            userId, LocalDate.now().plusDays(3));
+
+        Map<Long, List<RecipeIngredient>> ingredientsByRecipe =
+            recipeIngredientRepository.findAllById_RecipeIdIn(recipeIds).stream()
+                .collect(Collectors.groupingBy(RecipeIngredient::getRecipeId));
+
         List<RecipeSearchResponse> assembled = page.getContent().stream()
-            .map(r -> r.withBadge(
-                cookableIds.contains(r.id()),
-                expiringMap.getOrDefault(r.id(), 0L).intValue(),
-                favoriteIds.contains(r.id())
-            ))
+            .map(r -> {
+                List<RecipeSearchResponse.IngredientSummary> summaries =
+                    ingredientsByRecipe.getOrDefault(r.id(), List.of()).stream()
+                        .map(ri -> new RecipeSearchResponse.IngredientSummary(
+                            ri.getIngredientId(),
+                            ri.getIngredient().getName(),
+                            getFridgeStatus(ri.getIngredientId(), myIngredientIds, expiringIngredientIds)
+                        ))
+                        .toList();
+                return r.withBadgeAndIngredients(
+                    cookableIds.contains(r.id()),
+                    expiringMap.getOrDefault(r.id(), 0L).intValue(),
+                    favoriteIds.contains(r.id()),
+                    summaries
+                );
+            })
             .toList();
 
         return new PageImpl<>(assembled, page.getPageable(), page.getTotalElements());
