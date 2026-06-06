@@ -32,6 +32,6 @@ public class ErrorResponse<T> {
     }
 
     public static ErrorResponse<Void> of(final ErrorCode code) {
-        return new ErrorResponse<>(code, null);
+        return new ErrorResponse<>(code, code.getMessage());
     }
 }

@@ -1,15 +1,18 @@
 package gnu.project.pbl2.admin.service;
 
 import gnu.project.pbl2.admin.dto.AdminRecipeCreateRequest;
-import gnu.project.pbl2.fridge.entity.Ingredient;
-import gnu.project.pbl2.fridge.repository.IngredientRepository;
+import gnu.project.pbl2.admin.dto.FastApiJobStatus;
 import gnu.project.pbl2.admin.dto.GeminiRecipeDto;
+import gnu.project.pbl2.admin.dto.ImportStartResponse;
+import gnu.project.pbl2.admin.dto.ImportStatusResponse;
 import gnu.project.pbl2.common.entity.Category;
 import gnu.project.pbl2.common.entity.Taste;
 import gnu.project.pbl2.common.error.ErrorCode;
 import gnu.project.pbl2.common.exception.BusinessException;
 import gnu.project.pbl2.common.repository.CategoryRepository;
 import gnu.project.pbl2.common.repository.TasteRepository;
+import gnu.project.pbl2.fridge.entity.Ingredient;
+import gnu.project.pbl2.fridge.repository.IngredientRepository;
 import gnu.project.pbl2.recipe.entity.Recipe;
 import gnu.project.pbl2.recipe.entity.RecipeStep;
 import gnu.project.pbl2.recipe.repository.RecipeRepository;
@@ -20,6 +23,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,15 +42,52 @@ public class RecipeImportService {
     private final RecipeIngredientRepository recipeIngredientRepository;
     private final RecipeStepRepository recipeStepRepository;
 
-    @Transactional
-    public Long importFromYoutube(final String youtubeUrl) {
+    // jobId → (youtubeUrl, 저장된 recipeId)
+    private final ConcurrentHashMap<String, ImportJobEntry> importJobs = new ConcurrentHashMap<>();
+
+    private record ImportJobEntry(String youtubeUrl, Long recipeId) {}
+
+    public ImportStartResponse startImport(final String youtubeUrl) {
         if (recipeRepository.existsByYoutubeUrl(youtubeUrl)) {
             throw new BusinessException(ErrorCode.RECIPE_ALREADY_EXISTS);
         }
 
-        log.info("Gemini 영상 분석 시작: {}", youtubeUrl);
-        final GeminiRecipeDto dto = geminiService.extractRecipeFromYoutube(youtubeUrl);
-        log.info("Gemini 분석 완료: {}", dto.title());
+        String jobId = geminiService.submitRecipeJob(youtubeUrl);
+        importJobs.put(jobId, new ImportJobEntry(youtubeUrl, null));
+        return new ImportStartResponse(jobId);
+    }
+
+    @Transactional
+    public ImportStatusResponse checkImportStatus(final String jobId) {
+        ImportJobEntry entry = importJobs.get(jobId);
+        if (entry == null) {
+            throw new BusinessException(ErrorCode.IMPORT_JOB_NOT_FOUND);
+        }
+
+        // 이미 저장 완료된 경우 재조회 없이 반환
+        if (entry.recipeId() != null) {
+            return new ImportStatusResponse("completed", entry.recipeId(), null);
+        }
+
+        FastApiJobStatus jobStatus = geminiService.getJobStatus(jobId);
+
+        if ("completed".equals(jobStatus.status())) {
+            Long recipeId = saveRecipeFromDto(jobStatus.result(), entry.youtubeUrl());
+            importJobs.put(jobId, new ImportJobEntry(entry.youtubeUrl(), recipeId));
+            return new ImportStatusResponse("completed", recipeId, null);
+        }
+
+        if ("failed".equals(jobStatus.status())) {
+            importJobs.remove(jobId);
+            return new ImportStatusResponse("failed", null, jobStatus.error());
+        }
+
+        return new ImportStatusResponse(jobStatus.status(), null, null);
+    }
+
+    private Long saveRecipeFromDto(final GeminiRecipeDto dto, final String youtubeUrl) {
+        log.info("레시피 DB 저장: {}", dto.title());
+
         final Category category = categoryRepository.findByName(dto.categoryName())
             .orElseThrow(() -> new BusinessException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -54,15 +95,14 @@ public class RecipeImportService {
             .orElseThrow(() -> new BusinessException(ErrorCode.TASTE_NOT_FOUND));
 
         final Recipe recipe = recipeRepository.save(Recipe.create(
-                dto.title(),
-                category,
-                taste,
-                dto.cookTimeMin(),
-                dto.description(),
-                youtubeUrl,
-                extractThumbnailUrl(youtubeUrl)
-            )
-        );
+            dto.title(),
+            category,
+            taste,
+            dto.cookTimeMin(),
+            dto.description(),
+            youtubeUrl,
+            extractThumbnailUrl(youtubeUrl)
+        ));
 
         dto.ingredients().forEach(ing -> {
             Ingredient ingredient = ingredientRepository.findByName(ing.name())
@@ -79,7 +119,6 @@ public class RecipeImportService {
         for (int i = 0; i < dto.steps().size(); i++) {
             steps.add(recipeStepRepository.save(RecipeStep.of(recipe, i + 1, dto.steps().get(i))));
         }
-
         recipe.addSteps(steps);
 
         return recipe.getId();
@@ -133,13 +172,10 @@ public class RecipeImportService {
             String videoId = null;
 
             if (host.contains("youtu.be")) {
-                // https://youtu.be/VIDEO_ID
                 videoId = path.replaceFirst("^/", "");
             } else if (path.startsWith("/shorts/")) {
-                // https://www.youtube.com/shorts/VIDEO_ID
                 videoId = path.substring("/shorts/".length());
             } else {
-                // https://www.youtube.com/watch?v=VIDEO_ID
                 for (String param : query.split("&")) {
                     if (param.startsWith("v=")) {
                         videoId = param.substring(2);

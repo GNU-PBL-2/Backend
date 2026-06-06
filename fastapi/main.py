@@ -3,11 +3,13 @@ import io
 import json
 import os
 import re
+import uuid
 from datetime import datetime
 from pathlib import Path
 
 import torch
-from fastapi import FastAPI, File, HTTPException, UploadFile
+import yt_dlp
+from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
 from google.genai import types
@@ -44,6 +46,12 @@ model.eval()
 # 환경변수 YOLO_DEBUG_SAVE_IMAGES=true 로 활성화
 DEBUG_SAVE_IMAGES = os.getenv("YOLO_DEBUG_SAVE_IMAGES", "false").lower() == "true"
 DEBUG_SAVE_DIR    = Path(os.getenv("YOLO_DEBUG_SAVE_DIR", "debug_images"))
+
+MAX_VIDEO_MINUTES = 10
+
+# ── 비동기 작업 저장소 ─────────────────────────────────────
+# {job_id: {"status": str, "result": dict|None, "error": str|None}}
+jobs: dict = {}
 
 
 def save_debug_image(image_bytes: bytes, prefix: str, content_type: str) -> None:
@@ -147,6 +155,25 @@ PROMPT = f"""
 """
 
 
+def _normalize_youtube_url(url: str) -> str:
+    """Gemini API 호환을 위해 YouTube URL에서 v= 이외의 파라미터 제거."""
+    from urllib.parse import urlparse, parse_qs
+    parsed = urlparse(url)
+    host = parsed.netloc.lower()
+
+    if "youtu.be" in host:
+        video_id = parsed.path.strip("/")
+        return f"https://youtu.be/{video_id}"
+    if "/shorts/" in parsed.path:
+        video_id = parsed.path.split("/shorts/", 1)[1].split("/")[0]
+        return f"https://www.youtube.com/shorts/{video_id}"
+    params = parse_qs(parsed.query)
+    video_id = params.get("v", [None])[0]
+    if video_id:
+        return f"https://www.youtube.com/watch?v={video_id}"
+    return url
+
+
 def get_gemini_client() -> genai.Client:
     api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
@@ -154,47 +181,92 @@ def get_gemini_client() -> genai.Client:
     return genai.Client(api_key=api_key)
 
 
-class YoutubeRequest(BaseModel):
-    youtube_url: str
+def _get_video_duration_seconds(url: str) -> int:
+    """yt-dlp로 영상 길이(초)를 가져온다. 실패 시 0 반환."""
+    ydl_opts = {"quiet": True, "no_warnings": True, "skip_download": True}
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(url, download=False)
+        return info.get("duration", 0) or 0
 
 
-@app.post("/analyze-recipe")
-async def analyze_recipe(req: YoutubeRequest):
+async def _run_recipe_job(job_id: str, youtube_url: str) -> None:
+    jobs[job_id]["status"] = "processing"
+    normalized_url = _normalize_youtube_url(youtube_url)
+
+    # 영상 길이 체크 (blocking I/O → executor로 오프로드)
+    try:
+        loop = asyncio.get_event_loop()
+        duration = await loop.run_in_executor(None, _get_video_duration_seconds, normalized_url)
+        if duration > MAX_VIDEO_MINUTES * 60:
+            jobs[job_id]["status"] = "failed"
+            jobs[job_id]["error"] = (
+                f"영상이 너무 깁니다. {MAX_VIDEO_MINUTES}분 이하 영상만 분석 가능합니다. "
+                f"(현재: {duration // 60}분 {duration % 60}초)"
+            )
+            return
+    except Exception as e:
+        # private 영상 등 길이 조회 불가 시 그냥 진행
+        print(f"[analyze-recipe] 영상 길이 확인 실패 (계속 진행): {e}", flush=True)
+
+    # Gemini 분석
     client = get_gemini_client()
-    max_retries = 3
-    retry_delay = 2
+    max_retries = 5
+    retry_delay = 10
 
     for attempt in range(max_retries):
         try:
             response = client.models.generate_content(
-                model="gemini-3-flash-preview",
+                model="gemini-2.5-flash",
                 contents=types.Content(
                     parts=[
-                        types.Part(
-                            file_data=types.FileData(file_uri=req.youtube_url)
-                        ),
-                        types.Part(text=PROMPT)
+                        types.Part(file_data=types.FileData(file_uri=normalized_url)),
+                        types.Part(text=PROMPT),
                     ]
                 ),
                 config=types.GenerateContentConfig(
                     temperature=0.1,
-                    response_mime_type="application/json"
-                )
+                    response_mime_type="application/json",
+                ),
             )
 
             if not response.text:
                 raise ValueError("응답 텍스트가 비어있습니다.")
 
             raw = re.sub(r"^```json\s*|\s*```$", "", response.text.strip()).strip()
-            return json.loads(raw)
+            jobs[job_id]["status"] = "completed"
+            jobs[job_id]["result"] = json.loads(raw)
+            return
 
         except Exception as e:
             error_msg = str(e)
             print(f"[analyze-recipe] attempt={attempt} error={error_msg}", flush=True)
-            if "503" in error_msg and attempt < max_retries - 1:
-                await asyncio.sleep(retry_delay * (attempt + 1))
+            if ("503" in error_msg or "UNAVAILABLE" in error_msg) and attempt < max_retries - 1:
+                wait = retry_delay * (2 ** attempt)  # 10s, 20s, 40s, 80s
+                print(f"[analyze-recipe] {wait}초 후 재시도...", flush=True)
+                await asyncio.sleep(wait)
                 continue
+            jobs[job_id]["status"] = "failed"
+            jobs[job_id]["error"] = f"분석 실패: {error_msg}"
+            return
 
-            raise HTTPException(status_code=500, detail=f"분석 실패: {error_msg}")
+    jobs[job_id]["status"] = "failed"
+    jobs[job_id]["error"] = "최대 재시도 횟수 초과 (Gemini 서버 과부하)"
 
-    raise HTTPException(status_code=503, detail="Gemini 서버 과부하로 인해 요청을 처리할 수 없습니다.")
+
+class YoutubeRequest(BaseModel):
+    youtube_url: str
+
+
+@app.post("/analyze-recipe")
+async def analyze_recipe(req: YoutubeRequest, background_tasks: BackgroundTasks):
+    job_id = str(uuid.uuid4())
+    jobs[job_id] = {"status": "pending", "result": None, "error": None}
+    background_tasks.add_task(_run_recipe_job, job_id, req.youtube_url)
+    return {"job_id": job_id}
+
+
+@app.get("/analyze-recipe/{job_id}")
+async def get_recipe_status(job_id: str):
+    if job_id not in jobs:
+        raise HTTPException(status_code=404, detail="분석 작업을 찾을 수 없습니다.")
+    return jobs[job_id]

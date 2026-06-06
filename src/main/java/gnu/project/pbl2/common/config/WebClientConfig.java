@@ -1,6 +1,7 @@
 package gnu.project.pbl2.common.config;
 
 import io.netty.channel.ChannelOption;
+import java.time.Duration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
@@ -14,7 +15,8 @@ import reactor.netty.http.client.HttpClient;
 public class WebClientConfig implements WebFluxConfigurer {
 
     HttpClient httpClient = HttpClient.create()
-        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000);
+        .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
+        .responseTimeout(Duration.ofSeconds(600));
 
     @Bean
     public WebClient webClient() {
