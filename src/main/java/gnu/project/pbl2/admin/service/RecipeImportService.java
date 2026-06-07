@@ -48,7 +48,7 @@ public class RecipeImportService {
     private record ImportJobEntry(String youtubeUrl, Long recipeId) {}
 
     public ImportStartResponse startImport(final String youtubeUrl) {
-        if (recipeRepository.existsByYoutubeUrl(youtubeUrl)) {
+        if (recipeRepository.existsByYoutubeUrlAndIsDeletedFalse(youtubeUrl)) {
             throw new BusinessException(ErrorCode.RECIPE_ALREADY_EXISTS);
         }
 
