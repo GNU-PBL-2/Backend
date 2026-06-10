@@ -48,6 +48,7 @@ public class CartController implements CartDocs {
     @OnlyUser
     @PatchMapping("/items/{cartItemId}")
     public ResponseEntity<CartItemResponse> updateItem(
+        @Auth final Accessor accessor,
         @PathVariable final Long cartItemId,
         @Valid @RequestBody final CartItemUpdateRequest request
     ) {
@@ -56,14 +57,20 @@ public class CartController implements CartDocs {
 
     @OnlyUser
     @DeleteMapping("/items/{cartItemId}")
-    public ResponseEntity<Void> deleteItem(@PathVariable final Long cartItemId) {
+    public ResponseEntity<Void> deleteItem(
+        @Auth final Accessor accessor,
+        @PathVariable final Long cartItemId
+    ) {
         cartService.deleteItem(cartItemId);
         return ResponseEntity.noContent().build();
     }
 
     @OnlyUser
     @DeleteMapping("/items")
-    public ResponseEntity<Void> deleteItems(@RequestBody final List<Long> cartItemIds) {
+    public ResponseEntity<Void> deleteItems(
+        @Auth final Accessor accessor,
+        @RequestBody final List<Long> cartItemIds
+    ) {
         cartService.deleteItems(cartItemIds);
         return ResponseEntity.noContent().build();
     }
