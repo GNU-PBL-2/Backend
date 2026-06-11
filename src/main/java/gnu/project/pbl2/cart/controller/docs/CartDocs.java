@@ -25,5 +25,5 @@ public interface CartDocs {
     ResponseEntity<Void> deleteItem(Long cartItemId);
 
     @Operation(summary = "장바구니 항목 일괄 삭제")
-    ResponseEntity<Void> deleteItems(List<Long> cartItemIds);
+    ResponseEntity<Void> deleteItems(List<Long> cartItemIds, Accessor accessor);
 }
