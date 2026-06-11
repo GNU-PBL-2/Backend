@@ -7,18 +7,21 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
-import numpy
-import numpy._core.multiarray
+import functools
+
 import torch
 import yt_dlp
 
-# PyTorch 2.6+: weights_only 기본값이 True로 변경됨 → best.pt 내 numpy 타입 허용
-if hasattr(torch.serialization, "add_safe_globals"):
-    torch.serialization.add_safe_globals([
-        numpy._core.multiarray._reconstruct,
-        numpy.ndarray,
-        numpy.dtype,
-    ])
+# PyTorch 2.6+: weights_only 기본값이 True로 변경됨
+# hubconf.py 내부의 torch.load 호출에 weights_only=False를 강제 적용 (신뢰된 자체 모델 파일)
+_original_torch_load = torch.load
+
+@functools.wraps(_original_torch_load)
+def _patched_torch_load(*args, **kwargs):
+    kwargs.setdefault("weights_only", False)
+    return _original_torch_load(*args, **kwargs)
+
+torch.load = _patched_torch_load
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai
