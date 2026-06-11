@@ -1,4 +1,4 @@
-FROM ultralytics/yolov5:v7.3.0-cpu
+FROM ultralytics/yolov5:latest-cpu
 
 WORKDIR /app
 
