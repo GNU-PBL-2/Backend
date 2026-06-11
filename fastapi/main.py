@@ -7,8 +7,18 @@ import uuid
 from datetime import datetime
 from pathlib import Path
 
+import numpy
+import numpy._core.multiarray
 import torch
 import yt_dlp
+
+# PyTorch 2.6+: weights_only 기본값이 True로 변경됨 → best.pt 내 numpy 타입 허용
+if hasattr(torch.serialization, "add_safe_globals"):
+    torch.serialization.add_safe_globals([
+        numpy._core.multiarray._reconstruct,
+        numpy.ndarray,
+        numpy.dtype,
+    ])
 from fastapi import BackgroundTasks, FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from google import genai

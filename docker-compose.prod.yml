@@ -32,8 +32,8 @@ services:
       test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/docs')"]
       interval: 15s
       timeout: 10s
-      retries: 10
-      start_period: 120s
+      retries: 12
+      start_period: 180s
     networks:
       - pbl2-network
     restart: unless-stopped
